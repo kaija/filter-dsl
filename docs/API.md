@@ -34,8 +34,8 @@ Add this dependency to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>com.example</groupId>
-    <artifactId>user-segmentation-dsl</artifactId>
+    <groupId>com.filter.dsl</groupId>
+    <artifactId>filter-dsl</artifactId>
     <version>1.0.0</version>
 </dependency>
 ```
@@ -45,7 +45,7 @@ Add this dependency to your `pom.xml`:
 Add this dependency to your `build.gradle`:
 
 ```gradle
-implementation 'com.example:user-segmentation-dsl:1.0.0'
+implementation 'com.filter.dsl:filter-dsl:1.0.0'
 ```
 
 ### Gradle (Kotlin DSL)
@@ -53,7 +53,7 @@ implementation 'com.example:user-segmentation-dsl:1.0.0'
 Add this dependency to your `build.gradle.kts`:
 
 ```kotlin
-implementation("com.example:user-segmentation-dsl:1.0.0")
+implementation("com.filter.dsl:filter-dsl:1.0.0")
 ```
 
 ## Quick Start
@@ -61,9 +61,9 @@ implementation("com.example:user-segmentation-dsl:1.0.0")
 ### Basic Usage
 
 ```java
-import com.example.dsl.DSL;
-import com.example.dsl.models.*;
-import com.example.dsl.evaluator.EvaluationResult;
+import com.filter.dsl.DSL;
+import com.filter.dsl.models.*;
+import com.filter.dsl.evaluator.EvaluationResult;
 
 // Create user data
 UserData userData = UserData.builder()
@@ -79,7 +79,7 @@ UserData userData = UserData.builder()
     .build();
 
 // Evaluate expression
-String expression = "GT(COUNT(WHERE(userData.events, EQ(EVENT(\"eventName\"), \"purchase\"))), 5)";
+String expression = "GT(COUNT(WHERE(userData.events, \"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\")), 5)";
 EvaluationResult result = DSL.evaluate(expression, userData);
 
 // Check result

@@ -12,15 +12,15 @@ Let's create a simple function that reverses a string.
 
 #### Step 1: Create the Function Class
 
-Create a new file `src/main/java/com/example/dsl/functions/string/ReverseFunction.java`:
+Create a new file `src/main/java/com/filter/dsl/functions/string/ReverseFunction.java`:
 
 ```java
-package com.example.dsl.functions.string;
+package com.filter.dsl.functions.string;
 
-import com.example.dsl.functions.DSLFunction;
-import com.example.dsl.functions.FunctionMetadata;
-import com.example.dsl.functions.FunctionMetadata.ArgumentType;
-import com.example.dsl.functions.FunctionMetadata.ReturnType;
+import com.filter.dsl.functions.DSLFunction;
+import com.filter.dsl.functions.FunctionMetadata;
+import com.filter.dsl.functions.FunctionMetadata.ArgumentType;
+import com.filter.dsl.functions.FunctionMetadata.ReturnType;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 import com.googlecode.aviator.runtime.type.AviatorString;
 
@@ -77,8 +77,8 @@ public class ReverseFunction extends DSLFunction {
 In your application code, register the function with the FunctionRegistry:
 
 ```java
-import com.example.dsl.functions.FunctionRegistry;
-import com.example.dsl.functions.string.ReverseFunction;
+import com.filter.dsl.functions.FunctionRegistry;
+import com.filter.dsl.functions.string.ReverseFunction;
 import com.googlecode.aviator.AviatorEvaluator;
 import com.googlecode.aviator.AviatorEvaluatorInstance;
 

@@ -244,7 +244,7 @@ Returns the number of items in a collection.
 **Examples:**
 ```
 COUNT(userData.events)                             → 42
-COUNT(WHERE(userData.events, EQ(EVENT("eventName"), "purchase")))  → 5
+COUNT(WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")"))  → 5
 COUNT([])                                          → 0
 ```
 
@@ -335,7 +335,7 @@ Returns only distinct values from a collection, removing duplicates.
 ```
 UNIQUE([1, 2, 2, 3, 3, 3])                        → [1, 2, 3]
 UNIQUE(["a", "b", "a", "c"])                      → ["a", "b", "c"]
-COUNT(UNIQUE(BY(DATE_FORMAT(ACTION_TIME(), "yyyy-MM-dd"))))  → unique days
+COUNT(UNIQUE(BY("DATE_FORMAT(ACTION_TIME(), \"yyyy-MM-dd\")")))  → unique days
 ```
 
 **Notes:**
@@ -780,7 +780,7 @@ Checks if an event occurred in the recent N days.
 **Examples:**
 ```
 IN_RECENT_DAYS(30)                                 → true/false
-WHERE(userData.events, IN_RECENT_DAYS(7))         → events in past week
+WHERE(userData.events, "IN_RECENT_DAYS(7)")        → events in past week
 ```
 
 #### IS_RECURRING
@@ -929,21 +929,27 @@ GT(PARAM("amount"), 100)                           → true/false
 
 ### IF
 
-Filters events based on a boolean condition.
+Filters events based on a condition expression.
 
-**Syntax:** `IF(condition)`
+**Syntax:** `IF(conditionExpression)`
 
 **Parameters:**
-- `condition` (Boolean) - Filtering condition
+- `conditionExpression` (String) - A string containing the filtering condition expression
 
 **Returns:** Collection - filtered events
 
 **Examples:**
 ```
-IF(EQ(EVENT("eventName"), "purchase"))             → only purchase events
-IF(GT(PARAM("amount"), 100))                       → events with amount > 100
-COUNT(IF(EQ(EVENT("eventType"), "action")))        → count of action events
+IF("EQ(EVENT(\"eventName\"), \"purchase\")")             → only purchase events
+IF("GT(PARAM(\"amount\"), 100)")                         → events with amount > 100
+COUNT(IF("EQ(EVENT(\"eventType\"), \"action\")"))        → count of action events
 ```
+
+**Important Note:**
+- IF accepts a STRING expression, not a boolean expression directly
+- This is due to AviatorScript's eager evaluation behavior
+- The string is evaluated in the context of each event
+- Quotes inside the string must be escaped with backslashes
 
 **Notes:**
 - Filters the events collection
@@ -951,22 +957,28 @@ COUNT(IF(EQ(EVENT("eventType"), "action")))        → count of action events
 
 ### WHERE
 
-Filters a collection based on a boolean condition.
+Filters a collection based on a condition expression.
 
-**Syntax:** `WHERE(collection, condition)`
+**Syntax:** `WHERE(collection, conditionExpression)`
 
 **Parameters:**
 - `collection` (Collection) - Collection to filter
-- `condition` (Boolean) - Filtering condition
+- `conditionExpression` (String) - A string containing the filtering condition expression
 
 **Returns:** Collection - filtered collection
 
 **Examples:**
 ```
-WHERE(userData.events, EQ(EVENT("eventName"), "purchase"))  → purchase events
-WHERE(userData.events, GT(PARAM("amount"), 100))            → high-value events
-COUNT(WHERE(userData.events, IN_RECENT_DAYS(30)))           → recent event count
+WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")")  → purchase events
+WHERE(userData.events, "GT(PARAM(\"amount\"), 100)")              → high-value events
+COUNT(WHERE(userData.events, "IN_RECENT_DAYS(30)"))               → recent event count
 ```
+
+**Important Note:**
+- WHERE accepts a STRING expression as the second parameter, not a boolean expression directly
+- This is due to AviatorScript's eager evaluation behavior
+- The string is evaluated in the context of each collection item
+- Quotes inside the string must be escaped with backslashes
 
 **Notes:**
 - More explicit than IF
@@ -1371,7 +1383,7 @@ DSL functions can be combined to create powerful expressions:
 ### Example 1: High-Value Recent Purchasers
 ```
 AND(
-  GT(COUNT(WHERE(userData.events, EQ(EVENT("eventName"), "purchase"))), 5),
+  GT(COUNT(WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")")), 5),
   GT(SUM(PARAM("amount")), 1000),
   IN_RECENT_DAYS(30)
 )
@@ -1380,7 +1392,7 @@ AND(
 ### Example 2: Active Days Ratio
 ```
 DIVIDE(
-  COUNT(UNIQUE(BY(DATE_FORMAT(ACTION_TIME(), "yyyy-MM-dd")))),
+  COUNT(UNIQUE(BY("DATE_FORMAT(ACTION_TIME(), \"yyyy-MM-dd\")"))),
   30
 )
 ```
@@ -1390,10 +1402,10 @@ DIVIDE(
 GT(
   COUNT(WHERE(
     userData.events,
-    AND(
-      EQ(EVENT("eventName"), "purchase"),
-      OR(EQ(WEEKDAY(EVENT("timestamp")), 6), EQ(WEEKDAY(EVENT("timestamp")), 7))
-    )
+    "AND(
+      EQ(EVENT(\"eventName\"), \"purchase\"),
+      OR(EQ(WEEKDAY(EVENT(\"timestamp\")), 6), EQ(WEEKDAY(EVENT(\"timestamp\")), 7))
+    )"
   )),
   0
 )

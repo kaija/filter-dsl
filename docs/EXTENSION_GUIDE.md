@@ -29,11 +29,11 @@ The DSL is designed for extensibility. Each function is implemented in its own J
 Here's a minimal example of a custom function:
 
 ```java
-package com.example.dsl.functions.custom;
+package com.filter.dsl.functions.custom;
 
-import com.example.dsl.functions.DSLFunction;
-import com.example.dsl.functions.FunctionMetadata;
-import com.example.dsl.functions.FunctionMetadata.*;
+import com.filter.dsl.functions.DSLFunction;
+import com.filter.dsl.functions.FunctionMetadata;
+import com.filter.dsl.functions.FunctionMetadata.*;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 import com.googlecode.aviator.runtime.type.AviatorString;
 import java.util.Map;
@@ -172,14 +172,14 @@ Let's create a `REVERSE` function that reverses a string.
 
 ### Step 1: Create the Function Class
 
-Create `src/main/java/com/example/dsl/functions/string/ReverseFunction.java`:
+Create `src/main/java/com/filter/dsl/functions/string/ReverseFunction.java`:
 
 ```java
-package com.example.dsl.functions.string;
+package com.filter.dsl.functions.string;
 
-import com.example.dsl.functions.DSLFunction;
-import com.example.dsl.functions.FunctionMetadata;
-import com.example.dsl.functions.FunctionMetadata.*;
+import com.filter.dsl.functions.DSLFunction;
+import com.filter.dsl.functions.FunctionMetadata;
+import com.filter.dsl.functions.FunctionMetadata.*;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 import com.googlecode.aviator.runtime.type.AviatorString;
 import java.util.Map;
@@ -242,7 +242,7 @@ public class ReverseFunction extends DSLFunction {
 
 **Option A: Automatic Discovery (Recommended)**
 
-If your function is in the `com.example.dsl.functions` package, it will be auto-discovered:
+If your function is in the `com.filter.dsl.functions` package, it will be auto-discovered:
 
 ```java
 // Default instance automatically discovers functions
@@ -265,12 +265,12 @@ EvaluationResult result = dsl.evaluateInstance("REVERSE(\"hello\")", userData);
 
 ### Step 3: Test the Function
 
-Create `src/test/java/com/example/dsl/functions/string/ReverseFunctionTest.java`:
+Create `src/test/java/com/filter/dsl/functions/string/ReverseFunctionTest.java`:
 
 ```java
-package com.example.dsl.functions.string;
+package com.filter.dsl.functions.string;
 
-import com.example.dsl.functions.FunctionMetadata;
+import com.filter.dsl.functions.FunctionMetadata;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 import com.googlecode.aviator.runtime.type.AviatorString;
 import org.junit.jupiter.api.Test;
@@ -739,12 +739,12 @@ if (discount < 0 || discount > 100) {
 Here's a complete example with all best practices:
 
 ```java
-package com.example.dsl.functions.custom;
+package com.filter.dsl.functions.custom;
 
-import com.example.dsl.functions.DSLFunction;
-import com.example.dsl.functions.FunctionArgumentException;
-import com.example.dsl.functions.FunctionMetadata;
-import com.example.dsl.functions.FunctionMetadata.*;
+import com.filter.dsl.functions.DSLFunction;
+import com.filter.dsl.functions.FunctionArgumentException;
+import com.filter.dsl.functions.FunctionMetadata;
+import com.filter.dsl.functions.FunctionMetadata.*;
 import com.googlecode.aviator.runtime.type.AviatorDouble;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 

@@ -26,7 +26,7 @@ GT(
     COUNT(
         WHERE(
             userData.events, 
-            EQ(EVENT("eventName"), "purchase")
+            "EQ(EVENT(\"eventName\"), \"purchase\")"
         )
     ), 
     5
@@ -34,7 +34,7 @@ GT(
 ```
 
 **How it works**:
-1. `WHERE(userData.events, EQ(EVENT("eventName"), "purchase"))` - Filters all events to only purchase events
+1. `WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")")` - Filters all events to only purchase events (note: WHERE accepts a string expression)
 2. `COUNT(...)` - Counts the number of purchase events
 3. `GT(..., 5)` - Checks if the count is greater than 5
 
@@ -60,7 +60,7 @@ GT(
     SUM(
         WHERE(
             userData.events, 
-            EQ(EVENT("eventName"), "purchase")
+            "EQ(EVENT(\"eventName\"), \"purchase\")"
         )
     ), 
     1000
@@ -68,7 +68,7 @@ GT(
 ```
 
 **How it works**:
-1. `WHERE(userData.events, EQ(EVENT("eventName"), "purchase"))` - Filters to purchase events
+1. `WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")")` - Filters to purchase events (note: WHERE accepts a string expression)
 2. `SUM(...)` - Sums the amounts from all purchase events (assumes events have an "amount" field)
 3. `GT(..., 1000)` - Checks if the total exceeds $1000
 
@@ -93,7 +93,7 @@ BUCKET(
     SUM(
         WHERE(
             userData.events, 
-            EQ(EVENT("eventName"), "purchase")
+            "EQ(EVENT(\"eventName\"), \"purchase\")"
         )
     ), 
     [
@@ -139,7 +139,7 @@ DIVIDE(
         UNIQUE(
             WHERE(
                 userData.events, 
-                EQ(EVENT("eventType"), "action")
+                "EQ(EVENT(\"eventType\"), \"action\")"
             )
         )
     ), 
@@ -148,7 +148,7 @@ DIVIDE(
 ```
 
 **How it works**:
-1. `WHERE(userData.events, EQ(EVENT("eventType"), "action"))` - Filters to action events
+1. `WHERE(userData.events, "EQ(EVENT(\"eventType\"), \"action\")")` - Filters to action events (note: WHERE accepts a string expression)
 2. `UNIQUE(...)` - Gets unique events (removes duplicates from same day)
 3. `COUNT(...)` - Counts the number of unique active days
 4. `DIVIDE(..., 30)` - Calculates the ratio (active days / 30)
@@ -175,7 +175,7 @@ GT(
     COUNT(
         WHERE(
             userData.events, 
-            EQ(PARAM("utm_campaign"), "summer_sale")
+            "EQ(PARAM(\"utm_campaign\"), \"summer_sale\")"
         )
     ), 
     0
@@ -183,7 +183,7 @@ GT(
 ```
 
 **How it works**:
-1. `WHERE(userData.events, EQ(PARAM("utm_campaign"), "summer_sale"))` - Filters events with the specified UTM campaign
+1. `WHERE(userData.events, "EQ(PARAM(\"utm_campaign\"), \"summer_sale\")")` - Filters events with the specified UTM campaign (note: WHERE accepts a string expression)
 2. `COUNT(...)` - Counts matching events
 3. `GT(..., 0)` - Returns true if any events match
 
@@ -233,10 +233,10 @@ GT(
     COUNT(
         WHERE(
             userData.events, 
-            OR(
-                EQ(WEEKDAY(EVENT("timestamp")), 6), 
-                EQ(WEEKDAY(EVENT("timestamp")), 7)
-            )
+            "OR(
+                EQ(WEEKDAY(EVENT(\"timestamp\")), 6), 
+                EQ(WEEKDAY(EVENT(\"timestamp\")), 7)
+            )"
         )
     ), 
     0
@@ -246,7 +246,7 @@ GT(
 **How it works**:
 1. `WEEKDAY(EVENT("timestamp"))` - Gets the day of week (1=Monday, 7=Sunday)
 2. `OR(EQ(..., 6), EQ(..., 7))` - Checks if it's Saturday (6) or Sunday (7)
-3. `WHERE(...)` - Filters events to only weekend events
+3. `WHERE(...)` - Filters events to only weekend events (note: WHERE accepts a string expression)
 4. `COUNT(...)` - Counts weekend events
 5. `GT(..., 0)` - Returns true if any weekend events exist
 
@@ -281,7 +281,7 @@ BUCKET(
         SUM(
             WHERE(
                 userData.events, 
-                EQ(EVENT("eventName"), "purchase")
+                "EQ(EVENT(\"eventName\"), \"purchase\")"
             )
         ), 
         "cents", 
@@ -296,7 +296,7 @@ BUCKET(
 ```
 
 **How it works**:
-1. `SUM(WHERE(...))` - Calculates total purchase amount in cents
+1. `SUM(WHERE(...))` - Calculates total purchase amount in cents (note: WHERE accepts a string expression)
 2. `CONVERT_UNIT(..., "cents", "dollars")` - Converts from cents to dollars
 3. `BUCKET(...)` - Assigns to segment based on dollar amount
 
@@ -341,7 +341,7 @@ AND(
         COUNT(
             WHERE(
                 userData.events, 
-                EQ(EVENT("eventName"), "purchase")
+                "EQ(EVENT(\"eventName\"), \"purchase\")"
             )
         ), 
         10
@@ -350,7 +350,7 @@ AND(
         SUM(
             WHERE(
                 userData.events, 
-                EQ(EVENT("eventName"), "purchase")
+                "EQ(EVENT(\"eventName\"), \"purchase\")"
             )
         ), 
         2000
@@ -359,7 +359,7 @@ AND(
         COUNT(
             WHERE(
                 userData.events, 
-                EQ(EVENT("eventType"), "action")
+                "EQ(EVENT(\"eventType\"), \"action\")"
             )
         ), 
         0
@@ -372,9 +372,9 @@ AND(
 ```
 
 **How it works**:
-1. First condition: Checks purchase count > 10
-2. Second condition: Checks total purchase amount > $2000
-3. Third condition: Checks for recent activity
+1. First condition: Checks purchase count > 10 (note: WHERE accepts a string expression)
+2. Second condition: Checks total purchase amount > $2000 (note: WHERE accepts a string expression)
+3. Third condition: Checks for recent activity (note: WHERE accepts a string expression)
 4. Fourth condition: Checks if user is from US or UK
 5. `AND(...)` - All conditions must be true
 

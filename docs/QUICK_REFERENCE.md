@@ -7,15 +7,15 @@ Fast reference for common DSL patterns and functions.
 ```xml
 <!-- Maven -->
 <dependency>
-    <groupId>com.example</groupId>
-    <artifactId>user-segmentation-dsl</artifactId>
+    <groupId>com.filter.dsl</groupId>
+    <artifactId>filter-dsl</artifactId>
     <version>1.0.0</version>
 </dependency>
 ```
 
 ```gradle
 // Gradle
-implementation 'com.example:user-segmentation-dsl:1.0.0'
+implementation 'com.filter.dsl:filter-dsl:1.0.0'
 ```
 
 ## Basic Usage
@@ -57,13 +57,13 @@ List<EvaluationResult> results = DSL.evaluateBatch(expression, users);
 
 ```java
 // Purchase events only
-"WHERE(userData.events, EQ(EVENT(\"eventName\"), \"purchase\"))"
+"WHERE(userData.events, \"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\")"
 
 // Events in time range
-"WHERE(userData.events, AND(FROM(30, \"D\"), TO(0, \"D\")))"
+"WHERE(userData.events, \"AND(FROM(30, \\\"D\\\"), TO(0, \\\"D\\\"))\")"
 
 // High-value purchases
-"WHERE(userData.events, AND(EQ(EVENT(\"eventName\"), \"purchase\"), GT(PARAM(\"amount\"), 100)))"
+"WHERE(userData.events, \"AND(EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\"), GT(PARAM(\\\"amount\\\"), 100))\")"
 ```
 
 ### Aggregations

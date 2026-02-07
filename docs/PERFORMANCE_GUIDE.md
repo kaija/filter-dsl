@@ -72,7 +72,7 @@ EQ(PROFILE("country"), "US")
 **Complex Expression:**
 ```
 AND(
-  GT(COUNT(WHERE(userData.events, EQ(EVENT("eventName"), "purchase"))), 5),
+  GT(COUNT(WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")")), 5),
   GT(SUM(PARAM("amount")), 1000),
   IN_RECENT_DAYS(30)
 )
@@ -349,14 +349,14 @@ Write efficient DSL expressions.
 **❌ Complex nested expression:**
 ```
 AND(
-  GT(COUNT(WHERE(userData.events, EQ(EVENT("eventName"), "purchase"))), 5),
-  GT(COUNT(WHERE(userData.events, EQ(EVENT("eventName"), "purchase"))), 0)
+  GT(COUNT(WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")")), 5),
+  GT(COUNT(WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")")), 0)
 )
 ```
 
 **✅ Simplified:**
 ```
-GT(COUNT(WHERE(userData.events, EQ(EVENT("eventName"), "purchase"))), 5)
+GT(COUNT(WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")")), 5)
 ```
 
 The second condition is redundant (if count > 5, it's also > 0).
@@ -369,14 +369,14 @@ Filter before aggregating:
 ```
 GT(
   COUNT(userData.events),
-  WHERE(userData.events, EQ(EVENT("eventName"), "purchase"))
+  WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")")
 )
 ```
 
 **✅ Filter then aggregate:**
 ```
 GT(
-  COUNT(WHERE(userData.events, EQ(EVENT("eventName"), "purchase"))),
+  COUNT(WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")")),
   5
 )
 ```

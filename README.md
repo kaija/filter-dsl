@@ -5,11 +5,30 @@ A domain-specific language (DSL) built on AviatorScript for user segmentation an
 ## Features
 
 - **UPPERCASE Function Syntax**: Clear, readable DSL with consistent naming
+- **String-Based Filtering**: IF and WHERE functions accept string expressions for proper lazy evaluation
 - **Extensible Architecture**: Easy to add custom functions without modifying core code
 - **Type-Safe**: Built-in type checking and validation
 - **Comprehensive Function Library**: 50+ built-in functions for logical operations, aggregations, math, dates, strings, and more
 - **Property-Based Testing**: Thoroughly tested with both unit and property-based tests
 - **Thread-Safe**: Safe for concurrent use in multi-threaded applications
+
+## Important Notes
+
+### IF/WHERE Function Syntax
+
+The `IF` and `WHERE` functions accept **STRING expressions** instead of boolean expressions directly. This is due to AviatorScript's eager evaluation behavior, which would evaluate the condition before filtering.
+
+**Old syntax (incorrect):**
+```java
+WHERE(userData.events, EQ(EVENT("eventName"), "purchase"))
+```
+
+**New syntax (correct):**
+```java
+WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")")
+```
+
+Note that quotes inside the string expression must be escaped with backslashes (`\"`). This allows the DSL to properly evaluate the condition in the context of each item being filtered.
 
 ## Installation
 
@@ -19,8 +38,8 @@ Add this dependency to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>com.example</groupId>
-    <artifactId>user-segmentation-dsl</artifactId>
+    <groupId>com.filter.dsl</groupId>
+    <artifactId>filter-dsl</artifactId>
     <version>1.0.0</version>
 </dependency>
 ```
@@ -30,7 +49,7 @@ Add this dependency to your `pom.xml`:
 Add this dependency to your `build.gradle`:
 
 ```gradle
-implementation 'com.example:user-segmentation-dsl:1.0.0'
+implementation 'com.filter.dsl:filter-dsl:1.0.0'
 ```
 
 ### Manual Installation
@@ -46,9 +65,9 @@ If you're building from source or using the JAR directly:
 ## Quick Start
 
 ```java
-import com.example.dsl.DSL;
-import com.example.dsl.models.UserData;
-import com.example.dsl.evaluator.EvaluationResult;
+import com.filter.dsl.DSL;
+import com.filter.dsl.models.UserData;
+import com.filter.dsl.evaluator.EvaluationResult;
 
 // Create user data
 UserData userData = UserData.builder()
@@ -64,7 +83,7 @@ UserData userData = UserData.builder()
     .build();
 
 // Evaluate a DSL expression
-String expression = "GT(COUNT(WHERE(EQ(EVENT(\"event_name\"), \"purchase\"))), 5)";
+String expression = "GT(COUNT(WHERE(userData.events, \"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\")), 5)";
 EvaluationResult result = DSL.evaluate(expression, userData);
 
 if (result.isSuccess()) {
@@ -137,14 +156,17 @@ if (result.isSuccess()) {
 String expression = """
     GT(
         COUNT(
-            WHERE(EQ(EVENT("event_name"), "purchase")),
-            FROM(365, D),
-            TO(0, D)
+            WHERE(
+                userData.events,
+                "EQ(EVENT(\\"eventName\\"), \\"purchase\\")"
+            )
         ),
         5
     )
 """;
 ```
+
+**Note:** The WHERE function now accepts a STRING expression instead of a boolean expression. This is due to AviatorScript's eager evaluation behavior. Quotes inside the string must be escaped with backslashes.
 
 ### Calculate active days ratio in recent 30 days
 ```java
@@ -152,9 +174,13 @@ String expression = """
     DIVIDE(
         COUNT(
             UNIQUE(
-                BY(DATE_FORMAT(ACTION_TIME(), "yyyy-MM-dd")),
-                IF(EQ(EVENT("event_type"), "action")),
-                IN_RECENT_DAYS(30)
+                WHERE(
+                    userData.events,
+                    "AND(
+                        EQ(EVENT(\\"eventType\\"), \\"action\\"),
+                        IN_RECENT_DAYS(30)
+                    )"
+                )
             )
         ),
         30
@@ -162,15 +188,24 @@ String expression = """
 """;
 ```
 
+**Note:** The WHERE function accepts a STRING expression. Quotes inside must be escaped with backslashes.
+
 ### Segment users by purchase amount
 ```java
 String expression = """
     BUCKET(
-        SUM(PARAM("amount")),
+        SUM(
+            WHERE(
+                userData.events,
+                "EQ(EVENT(\\"eventName\\"), \\"purchase\\")"
+            )
+        ),
         [[0, 10, "Low"], [10, 100, "Medium"], [100, 500, "High"], [500, 5000, "VIP"]]
     )
 """;
 ```
+
+**Note:** The WHERE function accepts a STRING expression with escaped quotes.
 
 ## Extending the DSL
 
