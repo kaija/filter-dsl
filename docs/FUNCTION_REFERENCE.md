@@ -391,6 +391,51 @@ COUNT(UNIQUE(BY("DATE_FORMAT(ACTION_TIME(), \"yyyy-MM-dd\")")))  → unique days
 - Preserves order of first occurrence
 - Useful for counting distinct values
 
+### TOP
+
+Returns the most frequently occurring value(s) from a collection. **NEW in v1.0.0**: Supports frequency analysis for profile attributes.
+
+**Syntax:** 
+- `TOP(collection)` - Returns the single most frequent value
+- `TOP(collection, n)` - Returns the top n most frequent values as a list
+- `TOP(collection, propertyName)` - Returns the most frequent value of a property
+- `TOP(collection, propertyName, n)` - Returns the top n most frequent values of a property
+
+**Parameters:**
+- `collection` (Collection) - Collection to analyze
+- `n` (Number, optional) - Number of top values to return
+- `propertyName` (String, optional) - Property name to extract from objects
+
+**Returns:** 
+- Single value (when n is not specified)
+- List of values (when n is specified)
+- null for empty collections
+
+**Examples:**
+```
+// Simple collections
+TOP([1, 2, 2, 3, 2, 1])                           → 2
+TOP([1, 2, 2, 3, 2, 1], 2)                        → [2, 1]
+TOP(["a", "b", "a", "c", "a"])                    → "a"
+
+// Property extraction from objects
+TOP(userData.visits, "os")                         → "Windows 10"
+TOP(userData.visits, "browser", 3)                 → ["Chrome", "Safari", "Firefox"]
+TOP(userData.events, "eventName")                  → "page_view"
+
+// Profile computed properties
+profile.defineComputedProperty("os", "TOP(userData.visits, 'os')")
+profile.defineComputedProperty("browser", "TOP(userData.visits, 'browser')")
+profile.defineComputedProperty("device", "TOP(userData.visits, 'device')")
+```
+
+**Notes:**
+- Counts occurrences and returns the most frequent value(s)
+- For ties, values are returned in order of first occurrence
+- Supports extracting properties from Maps, POJOs with getters, or fields
+- Ideal for computing device attributes (os, browser, device) in user profiles
+- Returns null for empty collections
+
 ## Mathematical Functions
 
 ### Basic Arithmetic

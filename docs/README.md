@@ -40,6 +40,17 @@ Comprehensive reference for all 50+ built-in DSL functions:
 
 **Read this for:** Detailed information about each DSL function with examples.
 
+### [Profile Guide](PROFILE_GUIDE.md)
+Complete guide to the Profile model:
+- Fixed attributes (geographic, demographic, identification)
+- Auto-computed properties (age, age_range)
+- Dynamic properties (custom and computed)
+- First referral tracking
+- Usage examples and best practices
+- DSL filtering patterns
+
+**Read this for:** Understanding and using user profile attributes.
+
 ### [Extension Guide](EXTENSION_GUIDE.md)
 Learn how to add custom functions:
 - Quick start tutorial
@@ -122,9 +133,10 @@ Fast reference guide with:
 3. [Use Case Examples](USE_CASE_EXAMPLES.md) - Real-world examples
 
 **Going Deeper:**
-4. [Function Reference](FUNCTION_REFERENCE.md) - All available functions
-5. [Error Handling Guide](ERROR_HANDLING_GUIDE.md) - Robust error handling
-6. [Performance Guide](PERFORMANCE_GUIDE.md) - Optimization techniques
+4. [Profile Guide](PROFILE_GUIDE.md) - User profile attributes
+5. [Function Reference](FUNCTION_REFERENCE.md) - All available functions
+6. [Error Handling Guide](ERROR_HANDLING_GUIDE.md) - Robust error handling
+7. [Performance Guide](PERFORMANCE_GUIDE.md) - Optimization techniques
 
 ### For Library Extenders
 
@@ -153,6 +165,7 @@ docs/
 ├── README.md                      # This file - documentation index
 ├── API.md                         # Core API documentation
 ├── FUNCTION_REFERENCE.md          # All DSL functions
+├── PROFILE_GUIDE.md               # User profile attributes guide
 ├── EXTENSION_GUIDE.md             # Adding custom functions
 ├── PERFORMANCE_GUIDE.md           # Optimization techniques
 ├── ERROR_HANDLING_GUIDE.md        # Error handling patterns
