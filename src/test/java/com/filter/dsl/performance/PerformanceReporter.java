@@ -130,12 +130,12 @@ public class PerformanceReporter {
             writer.println("-".repeat(100));
             writer.println();
             
-            writer.printf("%-20s %12s %12s %12s %12s %12s %12s %12s%n",
-                "Dataset", "Avg (ms)", "P95 (ms)", "P99 (ms)", "Min (ms)", "Max (ms)", "Throughput", "Memory (MB)");
+            writer.printf("%-20s %12s %12s %12s %12s %12s %15s %12s%n",
+                "Dataset", "Avg (ms)", "P95 (ms)", "P99 (ms)", "Min (ms)", "Max (ms)", "Throughput(ops/s)", "Memory (MB)");
             writer.println("-".repeat(100));
             
             for (PerformanceMetrics m : metrics) {
-                writer.printf("%-20s %12.3f %12.3f %12.3f %12.3f %12.3f %12.2f %12.2f%n",
+                writer.printf("%-20s %12.3f %12.3f %12.3f %12.3f %12.3f %15.2f %12.2f%n",
                     m.datasetSize, m.avgTimeMs, m.p95TimeMs, m.p99TimeMs, 
                     m.minTimeMs, m.maxTimeMs, m.throughput, m.memoryUsedMB);
             }

@@ -67,21 +67,17 @@ public class ByFunction extends DSLFunction {
         Collection<?> collection = null;
         
         if (userData != null) {
-            // Try to get events from userData
-            try {
-                if (userData instanceof com.filter.dsl.models.UserData) {
-                    com.filter.dsl.models.UserData ud = (com.filter.dsl.models.UserData) userData;
-                    collection = ud.getEvents();
-                } else if (userData instanceof Map) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> userDataMap = (Map<String, Object>) userData;
-                    Object events = userDataMap.get("events");
-                    if (events instanceof Collection) {
-                        collection = (Collection<?>) events;
-                    }
+            // OPTIMIZED: Direct cast instead of try-catch
+            if (userData instanceof com.filter.dsl.models.UserData) {
+                com.filter.dsl.models.UserData ud = (com.filter.dsl.models.UserData) userData;
+                collection = ud.getEvents();
+            } else if (userData instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> userDataMap = (Map<String, Object>) userData;
+                Object events = userDataMap.get("events");
+                if (events instanceof Collection) {
+                    collection = (Collection<?>) events;
                 }
-            } catch (Exception e) {
-                // If we can't get events, collection remains null
             }
         }
         
@@ -90,14 +86,15 @@ public class ByFunction extends DSLFunction {
             return AviatorRuntimeJavaType.valueOf(new ArrayList<>());
         }
         
-        // Extract values by evaluating the expression for each item
-        List<Object> extractedValues = new ArrayList<>();
+        // OPTIMIZED: Pre-allocate list with exact size
+        List<Object> extractedValues = new ArrayList<>(collection.size());
         
+        // OPTIMIZED: Create HashMap ONCE and reuse it (instead of creating 100K times!)
+        Map<String, Object> itemEnv = new java.util.HashMap<>(env);
+        
+        // Extract values by evaluating the expression for each item
         for (Object item : collection) {
-            // Create item-specific context
-            Map<String, Object> itemEnv = new java.util.HashMap<>(env);
-            
-            // If item is an Event, set it as currentEvent
+            // OPTIMIZED: Just update currentEvent, don't recreate the entire map
             if (item instanceof Event) {
                 itemEnv.put("currentEvent", item);
             }

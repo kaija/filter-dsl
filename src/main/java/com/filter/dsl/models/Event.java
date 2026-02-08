@@ -1,6 +1,8 @@
 package com.filter.dsl.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +10,10 @@ import java.util.Map;
  * Event (action) record containing event name, timestamp, parameters, and metadata.
  */
 public class Event {
+    
+    // Cached parsed timestamp for performance optimization
+    // transient = not serialized to JSON
+    private transient Instant cachedTimestamp;
     @JsonProperty("uuid")
     private String uuid;
     
@@ -161,6 +167,29 @@ public class Event {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+        // Clear cached timestamp when timestamp string changes
+        this.cachedTimestamp = null;
+    }
+    
+    /**
+     * Get the timestamp as an Instant object.
+     * This method caches the parsed Instant to avoid repeated parsing,
+     * which significantly improves performance when filtering by date.
+     * 
+     * @return The parsed Instant, or null if timestamp is null or invalid
+     */
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public Instant getTimestampAsInstant() {
+        if (cachedTimestamp == null && timestamp != null && !timestamp.isEmpty()) {
+            try {
+                cachedTimestamp = Instant.parse(timestamp);
+            } catch (DateTimeParseException e) {
+                // Return null for invalid timestamps
+                // Don't cache the null to allow retry if timestamp is fixed
+                return null;
+            }
+        }
+        return cachedTimestamp;
     }
 
     public Boolean getTriggerable() {

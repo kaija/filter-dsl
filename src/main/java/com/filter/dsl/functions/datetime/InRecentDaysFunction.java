@@ -7,11 +7,10 @@ import com.filter.dsl.functions.FunctionMetadata.ReturnType;
 import com.filter.dsl.functions.TypeMismatchException;
 import com.filter.dsl.models.Event;
 import com.googlecode.aviator.runtime.type.AviatorObject;
-import com.googlecode.aviator.runtime.type.AviatorJavaType;
+import com.googlecode.aviator.runtime.type.AviatorRuntimeJavaType;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -70,80 +69,45 @@ public class InRecentDaysFunction extends DSLFunction {
         // Get the events collection from user data
         Object userData = getUserData(env);
         if (userData == null) {
-            List<Event> emptyList = new ArrayList<>();
-            return new AviatorJavaType("recentEvents") {
-                @Override
-                public Object getValue(Map<String, Object> environment) {
-                    return emptyList;
-                }
-            };
+            return AviatorRuntimeJavaType.valueOf(new ArrayList<>());
         }
         
-        // Try to get events from userData
+        // OPTIMIZED: Direct cast instead of reflection
         Collection<?> events = null;
-        try {
-            if (userData instanceof Map) {
-                Object eventsObj = ((Map<?, ?>) userData).get("events");
-                if (eventsObj instanceof Collection) {
-                    events = (Collection<?>) eventsObj;
-                }
-            } else {
-                // Try reflection to get events field
-                java.lang.reflect.Method getEventsMethod = userData.getClass().getMethod("getEvents");
-                Object eventsObj = getEventsMethod.invoke(userData);
-                if (eventsObj instanceof Collection) {
-                    events = (Collection<?>) eventsObj;
-                }
+        if (userData instanceof com.filter.dsl.models.UserData) {
+            events = ((com.filter.dsl.models.UserData) userData).getEvents();
+        } else if (userData instanceof Map) {
+            Object eventsObj = ((Map<?, ?>) userData).get("events");
+            if (eventsObj instanceof Collection) {
+                events = (Collection<?>) eventsObj;
             }
-        } catch (Exception e) {
-            // If we can't get events, return empty list
-            List<Event> emptyList = new ArrayList<>();
-            return new AviatorJavaType("recentEvents") {
-                @Override
-                public Object getValue(Map<String, Object> environment) {
-                    return emptyList;
-                }
-            };
         }
         
-        if (events == null) {
-            List<Event> emptyList = new ArrayList<>();
-            return new AviatorJavaType("recentEvents") {
-                @Override
-                public Object getValue(Map<String, Object> environment) {
-                    return emptyList;
-                }
-            };
+        if (events == null || events.isEmpty()) {
+            return AviatorRuntimeJavaType.valueOf(new ArrayList<>());
         }
         
-        // Filter events that occurred after the cutoff time
-        List<Event> recentEvents = new ArrayList<>();
+        // OPTIMIZED: Pre-allocate with estimated size (assume ~50% will match)
+        List<Event> recentEvents = new ArrayList<>(events.size() / 2);
+        
+        // OPTIMIZED: Filter using cached timestamps (no parsing in loop!)
         for (Object eventObj : events) {
             if (eventObj instanceof Event) {
                 Event event = (Event) eventObj;
-                String timestampStr = event.getTimestamp();
                 
-                if (timestampStr != null) {
-                    try {
-                        Instant eventTime = Instant.parse(timestampStr);
-                        
-                        // Include event if it's after the cutoff (within the past N days)
-                        if (!eventTime.isBefore(cutoff) && !eventTime.isAfter(now)) {
-                            recentEvents.add(event);
-                        }
-                    } catch (DateTimeParseException e) {
-                        // Skip events with invalid timestamps
-                    }
+                // OPTIMIZED: Use cached timestamp instead of parsing
+                Instant eventTime = event.getTimestampAsInstant();
+                
+                // Include event if it's after the cutoff (within the past N days)
+                if (eventTime != null && 
+                    !eventTime.isBefore(cutoff) && 
+                    !eventTime.isAfter(now)) {
+                    recentEvents.add(event);
                 }
             }
         }
         
-        return new AviatorJavaType("recentEvents") {
-            @Override
-            public Object getValue(Map<String, Object> environment) {
-                return recentEvents;
-            }
-        };
+        return AviatorRuntimeJavaType.valueOf(recentEvents);
     }
     
     @Override
