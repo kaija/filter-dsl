@@ -13,11 +13,11 @@ import java.util.Map;
 
 /**
  * ROUND function - Rounds a number to the nearest integer or specified decimal places.
- * 
- * Usage: 
+ *
+ * Usage:
  * - ROUND(n) - Rounds to nearest integer
  * - ROUND(n, decimals) - Rounds to specified decimal places
- * 
+ *
  * Examples:
  * - ROUND(5.4) -> 5.0
  * - ROUND(5.5) -> 6.0
@@ -26,7 +26,7 @@ import java.util.Map;
  * - ROUND(3.14159, 0) -> 3.0
  * - ROUND(123.456, 1) -> 123.5
  * - ROUND(-5.5) -> -6.0
- * 
+ *
  * The function requires 1 or 2 numeric arguments.
  * Returns a numeric value (double) rounded to the specified precision.
  */
@@ -53,11 +53,11 @@ public class RoundFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         Number num = toNumber(arg1, env);
-        
+
         // Use BigDecimal for precise rounding
         BigDecimal bd = BigDecimal.valueOf(num.doubleValue());
         bd = bd.setScale(0, RoundingMode.HALF_UP);
-        
+
         return AviatorDouble.valueOf(bd.doubleValue());
     }
 
@@ -66,18 +66,18 @@ public class RoundFunction extends DSLFunction {
         Number num = toNumber(arg1, env);
         Number decimalArg = toNumber(arg2, env);
         int decimals = decimalArg.intValue();
-        
+
         // Use BigDecimal for precise rounding
         BigDecimal bd = BigDecimal.valueOf(num.doubleValue());
         bd = bd.setScale(decimals, RoundingMode.HALF_UP);
-        
+
         return AviatorDouble.valueOf(bd.doubleValue());
     }
 
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
         validateArgCountRange(args, 1, 2);
-        
+
         if (args.length == 1) {
             return call(env, args[0]);
         } else {

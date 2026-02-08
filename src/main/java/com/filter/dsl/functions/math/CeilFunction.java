@@ -11,9 +11,9 @@ import java.util.Map;
 
 /**
  * CEIL function - Rounds a number up to the nearest integer.
- * 
+ *
  * Usage: CEIL(n)
- * 
+ *
  * Examples:
  * - CEIL(5.1) -> 6.0
  * - CEIL(5.9) -> 6.0
@@ -21,7 +21,7 @@ import java.util.Map;
  * - CEIL(-5.1) -> -5.0
  * - CEIL(-5.9) -> -5.0
  * - CEIL(0) -> 0.0
- * 
+ *
  * The function requires exactly 1 numeric argument.
  * Returns a numeric value (double) rounded up to the nearest integer.
  */
@@ -47,10 +47,10 @@ public class CeilFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         validateArgCount(new AviatorObject[]{arg1}, 1);
-        
+
         Number num = toNumber(arg1, env);
         double result = Math.ceil(num.doubleValue());
-        
+
         return AviatorDouble.valueOf(result);
     }
 

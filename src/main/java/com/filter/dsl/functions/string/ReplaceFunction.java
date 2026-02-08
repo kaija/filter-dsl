@@ -12,9 +12,9 @@ import java.util.Map;
 
 /**
  * REPLACE function - Replaces all occurrences of a search string with a replacement string.
- * 
+ *
  * Usage: REPLACE(string, search, replacement)
- * 
+ *
  * Examples:
  * - REPLACE("hello world", "world", "there") -> "hello there"
  * - REPLACE("hello hello", "hello", "hi") -> "hi hi"
@@ -22,7 +22,7 @@ import java.util.Map;
  * - REPLACE("hello", "", "x") -> "hello" (empty search returns original)
  * - REPLACE("", "hello", "world") -> ""
  * - REPLACE(null, "hello", "world") -> null
- * 
+ *
  * The function replaces all occurrences of the search string with the replacement string.
  * The replacement is case-sensitive.
  * Null inputs are handled gracefully - returns null if the string is null.
@@ -56,17 +56,17 @@ public class ReplaceFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
         validateArgCount(args, 3);
-        
+
         // Convert arguments to strings
         String str = toString(args[0], env);
         String search = toString(args[1], env);
         String replacement = toString(args[2], env);
-        
+
         // Handle null input gracefully
         if (str == null) {
             return AviatorNil.NIL;
         }
-        
+
         // Handle null search or replacement (treat as empty string)
         if (search == null) {
             search = "";
@@ -74,15 +74,15 @@ public class ReplaceFunction extends DSLFunction {
         if (replacement == null) {
             replacement = "";
         }
-        
+
         // If search is empty, return original string
         if (search.isEmpty()) {
             return new AviatorString(str);
         }
-        
+
         // Replace all occurrences
         String result = str.replace(search, replacement);
-        
+
         return new AviatorString(result);
     }
 }

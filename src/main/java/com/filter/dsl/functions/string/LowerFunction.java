@@ -12,16 +12,16 @@ import java.util.Map;
 
 /**
  * LOWER function - Converts a string to lowercase.
- * 
+ *
  * Usage: LOWER(string)
- * 
+ *
  * Examples:
  * - LOWER("HELLO") -> "hello"
  * - LOWER("Hello World") -> "hello world"
  * - LOWER("already lower") -> "already lower"
  * - LOWER("") -> ""
  * - LOWER(null) -> null
- * 
+ *
  * The function converts all characters in the string to lowercase using the default locale.
  * Null inputs are handled gracefully - returns null if the argument is null.
  */
@@ -47,18 +47,18 @@ public class LowerFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         validateArgCount(new AviatorObject[]{arg1}, 1);
-        
+
         // Convert argument to string
         String str = toString(arg1, env);
-        
+
         // Handle null input gracefully
         if (str == null) {
             return AviatorNil.NIL;
         }
-        
+
         // Convert to lowercase
         String result = str.toLowerCase();
-        
+
         return new AviatorString(result);
     }
 

@@ -17,14 +17,14 @@ import java.util.Map;
 
 /**
  * DATE_DIFF function - Calculates the difference between two dates in the specified unit.
- * 
+ *
  * Usage: DATE_DIFF(date1, date2, unit)
- * 
+ *
  * Examples:
  * - DATE_DIFF("2023-01-20T00:00:00Z", "2023-01-15T00:00:00Z", "D") -> 5
  * - DATE_DIFF("2023-01-15T12:00:00Z", "2023-01-15T10:00:00Z", "H") -> 2
  * - DATE_DIFF("2023-01-15T10:30:00Z", "2023-01-15T10:00:00Z", "M") -> 30
- * 
+ *
  * Supported units:
  * - D: Days
  * - H: Hours
@@ -32,7 +32,7 @@ import java.util.Map;
  * - W: Weeks
  * - MO: Months (approximate, 30 days)
  * - Y: Years (approximate, 365 days)
- * 
+ *
  * The result is date1 - date2, so a positive result means date1 is after date2.
  */
 public class DateDiffFunction extends DSLFunction {
@@ -59,28 +59,28 @@ public class DateDiffFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
         validateArgCount(args, 3);
-        
+
         String date1Str = toString(args[0], env);
         String date2Str = toString(args[1], env);
         String unitStr = toString(args[2], env);
-        
+
         if (date1Str == null || date2Str == null || unitStr == null) {
             throw new TypeMismatchException("DATE_DIFF requires non-null arguments");
         }
-        
+
         try {
             // Parse the timestamps
             Instant instant1 = Instant.parse(date1Str);
             Instant instant2 = Instant.parse(date2Str);
-            
+
             // Parse the time unit
             TimeUnit unit = TimeUnit.parse(unitStr);
-            
+
             // Calculate the difference
             long diff = calculateDifference(instant1, instant2, unit);
-            
+
             return AviatorLong.valueOf(diff);
-            
+
         } catch (DateTimeParseException e) {
             throw new TypeMismatchException(
                 "Invalid timestamp format. Expected ISO-8601 format (e.g., 2023-01-15T10:30:00Z)"
@@ -89,10 +89,10 @@ public class DateDiffFunction extends DSLFunction {
             throw new TypeMismatchException(e.getMessage());
         }
     }
-    
+
     /**
      * Calculate the difference between two instants in the specified unit.
-     * 
+     *
      * @param instant1 The first instant
      * @param instant2 The second instant
      * @param unit The time unit for the result
@@ -100,7 +100,7 @@ public class DateDiffFunction extends DSLFunction {
      */
     private long calculateDifference(Instant instant1, Instant instant2, TimeUnit unit) {
         Duration duration = Duration.between(instant2, instant1);
-        
+
         switch (unit) {
             case M:
                 return duration.toMinutes();
@@ -120,7 +120,7 @@ public class DateDiffFunction extends DSLFunction {
                 throw new IllegalArgumentException("Unsupported time unit: " + unit);
         }
     }
-    
+
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2, AviatorObject arg3) {
         return call(env, new AviatorObject[]{arg1, arg2, arg3});

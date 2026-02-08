@@ -12,8 +12,8 @@ public class BucketRange {
     private final boolean maxInclusive;
     private final String label;
 
-    public BucketRange(Double minValue, Double maxValue, 
-                       boolean minInclusive, boolean maxInclusive, 
+    public BucketRange(Double minValue, Double maxValue,
+                       boolean minInclusive, boolean maxInclusive,
                        String label) {
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -24,7 +24,7 @@ public class BucketRange {
 
     /**
      * Check if a value falls within this bucket range.
-     * 
+     *
      * @param value The value to check
      * @return true if the value is within the range boundaries
      */
@@ -33,9 +33,9 @@ public class BucketRange {
             return false;
         }
 
-        boolean aboveMin = minValue == null || 
+        boolean aboveMin = minValue == null ||
             (minInclusive ? value >= minValue : value > minValue);
-        boolean belowMax = maxValue == null || 
+        boolean belowMax = maxValue == null ||
             (maxInclusive ? value <= maxValue : value < maxValue);
 
         return aboveMin && belowMax;

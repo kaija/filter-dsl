@@ -76,6 +76,26 @@ public class TestDataGenerator {
             .build();
         userData.setProfile(profile);
         
+        // Generate visit data with device attributes
+        Map<String, com.filter.dsl.models.Visit> visits = new HashMap<>();
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-" + userId)
+            .timestamp(Instant.now().minus(RANDOM.nextInt(30), ChronoUnit.DAYS).toString())
+            .landingPage("/home")
+            .referrerType(RANDOM.nextDouble() < 0.5 ? "search" : "direct")
+            .referrerUrl(RANDOM.nextDouble() < 0.5 ? "https://google.com" : null)
+            .duration(RANDOM.nextInt(600) + 60) // 60-660 seconds
+            .actions(RANDOM.nextInt(20) + 1) // 1-20 actions
+            .isFirstVisit(RANDOM.nextDouble() < 0.3) // 30% first visits
+            // Device attributes (session-specific)
+            .os(RANDOM.nextDouble() < 0.5 ? "Windows" : (RANDOM.nextDouble() < 0.5 ? "macOS" : "iOS"))
+            .browser(RANDOM.nextDouble() < 0.5 ? "Chrome" : (RANDOM.nextDouble() < 0.5 ? "Safari" : "Firefox"))
+            .device(RANDOM.nextDouble() < 0.7 ? "Desktop" : "Mobile")
+            .screen(RANDOM.nextDouble() < 0.7 ? "1920x1080" : "375x667")
+            .build();
+        visits.put(visit.getUuid(), visit);
+        userData.setVisits(visits);
+        
         // Generate events
         List<Event> events = new ArrayList<>(eventCount);
         Instant now = Instant.now();

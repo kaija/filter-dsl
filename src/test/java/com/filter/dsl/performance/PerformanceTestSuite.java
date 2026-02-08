@@ -329,6 +329,68 @@ public class PerformanceTestSuite {
         reporter.addMetrics(metrics);
     }
     
+    // ========== VISIT FUNCTION ==========
+    
+    @Test
+    @Order(19)
+    @DisplayName("VISIT - Device Attributes - Large Dataset")
+    void testVisitDeviceLarge() {
+        UserData userData = TestDataGenerator.generateLargeDataset();
+        String expression = "COUNT(WHERE(EVENT(\"purchase\"), " +
+            "EQ(VISIT(\"device\"), \"Mobile\")))";
+        
+        PerformanceMetrics metrics = measurePerformance(
+            "VISIT_DEVICE", "Large (10MB)", expression, userData, LARGE_DATA_ITERATIONS
+        );
+        reporter.addMetrics(metrics);
+    }
+    
+    @Test
+    @Order(20)
+    @DisplayName("VISIT - OS Detection - Large Dataset")
+    void testVisitOsLarge() {
+        UserData userData = TestDataGenerator.generateLargeDataset();
+        String expression = "COUNT(WHERE(EVENT(\"purchase\"), " +
+            "EQ(VISIT(\"os\"), \"iOS\")))";
+        
+        PerformanceMetrics metrics = measurePerformance(
+            "VISIT_OS", "Large (10MB)", expression, userData, LARGE_DATA_ITERATIONS
+        );
+        reporter.addMetrics(metrics);
+    }
+    
+    @Test
+    @Order(21)
+    @DisplayName("VISIT - Browser Detection - Large Dataset")
+    void testVisitBrowserLarge() {
+        UserData userData = TestDataGenerator.generateLargeDataset();
+        String expression = "COUNT(WHERE(EVENT(\"purchase\"), " +
+            "EQ(VISIT(\"browser\"), \"Chrome\")))";
+        
+        PerformanceMetrics metrics = measurePerformance(
+            "VISIT_BROWSER", "Large (10MB)", expression, userData, LARGE_DATA_ITERATIONS
+        );
+        reporter.addMetrics(metrics);
+    }
+    
+    @Test
+    @Order(22)
+    @DisplayName("VISIT - Complex Device Query - Large Dataset")
+    void testVisitComplexLarge() {
+        UserData userData = TestDataGenerator.generateLargeDataset();
+        String expression = "COUNT(WHERE(EVENT(\"purchase\"), " +
+            "AND(" +
+                "EQ(VISIT(\"device\"), \"Mobile\"), " +
+                "EQ(VISIT(\"os\"), \"iOS\"), " +
+                "GT(PARAM(\"amount\"), 100)" +
+            ")))";
+        
+        PerformanceMetrics metrics = measurePerformance(
+            "VISIT_COMPLEX", "Large (10MB)", expression, userData, LARGE_DATA_ITERATIONS
+        );
+        reporter.addMetrics(metrics);
+    }
+    
     // ========== HELPER METHODS ==========
     
     /**

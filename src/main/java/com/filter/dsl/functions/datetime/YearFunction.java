@@ -16,14 +16,14 @@ import java.util.Map;
 
 /**
  * YEAR function - Returns the year.
- * 
+ *
  * Usage: YEAR(timestamp)
- * 
+ *
  * Examples:
  * - YEAR("2023-01-15T10:30:00Z") -> 2023
  * - YEAR("2024-06-15T10:30:00Z") -> 2024
  * - YEAR("2022-12-31T10:30:00Z") -> 2022
- * 
+ *
  * The function extracts the year component from the timestamp.
  */
 public class YearFunction extends DSLFunction {
@@ -48,29 +48,29 @@ public class YearFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
         validateArgCount(args, 1);
-        
+
         String timestampStr = toString(args[0], env);
-        
+
         if (timestampStr == null) {
             return AviatorNil.NIL;
         }
-        
+
         try {
             // Parse the timestamp string to Instant
             Instant instant = Instant.parse(timestampStr);
-            
+
             // Convert to ZonedDateTime in UTC to get year
             int year = instant.atZone(ZoneId.of("UTC")).getYear();
-            
+
             return AviatorLong.valueOf(year);
-            
+
         } catch (DateTimeParseException e) {
             throw new TypeMismatchException(
                 "Invalid timestamp format: " + timestampStr + ". Expected ISO-8601 format (e.g., 2023-01-15T10:30:00Z)"
             );
         }
     }
-    
+
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         return call(env, new AviatorObject[]{arg1});

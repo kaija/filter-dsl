@@ -11,16 +11,16 @@ import java.util.Map;
 
 /**
  * CONTAINS function - Returns true if the string contains the substring.
- * 
+ *
  * Usage: CONTAINS(string, substring)
- * 
+ *
  * Examples:
  * - CONTAINS("hello world", "world") -> true
  * - CONTAINS("hello world", "foo") -> false
  * - CONTAINS("hello", "hello") -> true
  * - CONTAINS("", "test") -> false
  * - CONTAINS("test", "") -> true (empty string is contained in any string)
- * 
+ *
  * The function performs case-sensitive substring matching.
  * Null inputs are handled gracefully - returns false if either argument is null.
  */
@@ -47,19 +47,19 @@ public class ContainsFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
         validateArgCount(new AviatorObject[]{arg1, arg2}, 2);
-        
+
         // Convert arguments to strings
         String str = toString(arg1, env);
         String substring = toString(arg2, env);
-        
+
         // Handle null inputs gracefully
         if (str == null || substring == null) {
             return AviatorBoolean.FALSE;
         }
-        
+
         // Check if string contains substring (case-sensitive)
         boolean result = str.contains(substring);
-        
+
         return result ? AviatorBoolean.TRUE : AviatorBoolean.FALSE;
     }
 

@@ -8,41 +8,41 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Visit {
     @JsonProperty("uuid")
     private String uuid;
-    
+
     @JsonProperty("timestamp")
     private String timestamp;
-    
+
     @JsonProperty("landing_page")
     private String landingPage;
-    
+
     @JsonProperty("referrer_type")
     private String referrerType;
-    
+
     @JsonProperty("referrer_url")
     private String referrerUrl;
-    
+
     @JsonProperty("referrer_query")
     private String referrerQuery;
-    
+
     @JsonProperty("duration")
     private Integer duration;
-    
+
     @JsonProperty("actions")
     private Integer actions;
-    
+
     @JsonProperty("is_first_visit")
     private Boolean isFirstVisit;
-    
+
     // Device/Session attributes (moved from Profile - these are session-specific)
     @JsonProperty("os")
     private String os;
-    
+
     @JsonProperty("browser")
     private String browser;
-    
+
     @JsonProperty("device")
     private String device;
-    
+
     @JsonProperty("screen")
     private String screen;
 

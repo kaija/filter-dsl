@@ -12,19 +12,19 @@ import java.util.Map;
 
 /**
  * MOD function - Returns the remainder of division of two numeric operands.
- * 
+ *
  * Usage: MOD(a, b)
- * 
+ *
  * Examples:
  * - MOD(10, 3) -> 1.0
  * - MOD(15, 4) -> 3.0
  * - MOD(20, 5) -> 0.0
  * - MOD(7, 2) -> 1.0
  * - MOD(10, 0) -> null (modulo by zero returns null)
- * 
+ *
  * The function requires exactly 2 numeric arguments.
  * Returns a numeric value (double) or null if divisor is zero.
- * 
+ *
  * Modulo by zero handling:
  * When the divisor is zero, the function returns null instead of throwing an error.
  * This allows expressions to continue evaluating gracefully.
@@ -52,15 +52,15 @@ public class ModFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
         validateArgCount(new AviatorObject[]{arg1, arg2}, 2);
-        
+
         Number num1 = toNumber(arg1, env);
         Number num2 = toNumber(arg2, env);
-        
+
         // Handle modulo by zero - return null as per requirements
         if (num2.doubleValue() == 0.0) {
             return AviatorNil.NIL;
         }
-        
+
         double result = num1.doubleValue() % num2.doubleValue();
         return AviatorDouble.valueOf(result);
     }

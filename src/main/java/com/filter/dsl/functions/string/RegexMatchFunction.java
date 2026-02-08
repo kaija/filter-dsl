@@ -14,15 +14,15 @@ import java.util.regex.PatternSyntaxException;
 
 /**
  * REGEX_MATCH function - Returns true if the string matches the regex pattern.
- * 
+ *
  * Usage: REGEX_MATCH(string, pattern)
- * 
+ *
  * Examples:
  * - REGEX_MATCH("hello123", "\\w+") -> true
  * - REGEX_MATCH("test@example.com", "^[\\w.]+@[\\w.]+$") -> true
  * - REGEX_MATCH("hello", "^[0-9]+$") -> false
  * - REGEX_MATCH("abc123", ".*\\d+.*") -> true
- * 
+ *
  * The function performs case-sensitive regex matching using Java's Pattern class.
  * Invalid regex patterns will throw an error with a descriptive message.
  * Null inputs are handled gracefully - returns false if either argument is null.
@@ -50,21 +50,21 @@ public class RegexMatchFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
         validateArgCount(new AviatorObject[]{arg1, arg2}, 2);
-        
+
         // Convert arguments to strings
         String str = toString(arg1, env);
         String patternStr = toString(arg2, env);
-        
+
         // Handle null inputs gracefully
         if (str == null || patternStr == null) {
             return AviatorBoolean.FALSE;
         }
-        
+
         try {
             // Compile the regex pattern and check if string matches
             Pattern pattern = Pattern.compile(patternStr);
             boolean result = pattern.matcher(str).matches();
-            
+
             return result ? AviatorBoolean.TRUE : AviatorBoolean.FALSE;
         } catch (PatternSyntaxException e) {
             // Handle invalid regex patterns with a descriptive error

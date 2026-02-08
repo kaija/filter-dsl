@@ -13,10 +13,10 @@ import java.util.Map;
 public class UserData {
     @JsonProperty("profile")
     private Profile profile;
-    
+
     @JsonProperty("visits")
     private Map<String, Visit> visits;
-    
+
     @JsonProperty("events")
     private List<Event> events;
 

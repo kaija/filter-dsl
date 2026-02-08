@@ -10,52 +10,55 @@ import java.util.Map;
  * Event (action) record containing event name, timestamp, parameters, and metadata.
  */
 public class Event {
-    
+
     // Cached parsed timestamp for performance optimization
     // transient = not serialized to JSON
     private transient Instant cachedTimestamp;
     @JsonProperty("uuid")
     private String uuid;
-    
+
+    @JsonProperty("visit_id")
+    private String visitId;
+
     @JsonProperty("is_first_in_visit")
     private Boolean isFirstInVisit;
-    
+
     @JsonProperty("is_last_in_visit")
     private Boolean isLastInVisit;
-    
+
     @JsonProperty("is_first_event")
     private Boolean isFirstEvent;
-    
+
     @JsonProperty("is_current")
     private Boolean isCurrent;
-    
+
     @JsonProperty("event_name")
     private String eventName;
-    
+
     @JsonProperty("integration")
     private String integration;
-    
+
     @JsonProperty("app")
     private String app;
-    
+
     @JsonProperty("platform")
     private String platform;
-    
+
     @JsonProperty("is_https")
     private Boolean isHttps;
-    
+
     @JsonProperty("event_type")
     private String eventType;
-    
+
     @JsonProperty("duration")
     private Integer duration;
-    
+
     @JsonProperty("timestamp")
     private String timestamp;
-    
+
     @JsonProperty("triggerable")
     private Boolean triggerable;
-    
+
     @JsonProperty("parameters")
     private Map<String, Object> parameters;
 
@@ -67,6 +70,14 @@ public class Event {
     // Getters and Setters
     public String getUuid() {
         return uuid;
+    }
+
+    public String getVisitId() {
+        return visitId;
+    }
+
+    public void setVisitId(String visitId) {
+        this.visitId = visitId;
     }
 
     public void setUuid(String uuid) {
@@ -170,12 +181,12 @@ public class Event {
         // Clear cached timestamp when timestamp string changes
         this.cachedTimestamp = null;
     }
-    
+
     /**
      * Get the timestamp as an Instant object.
      * This method caches the parsed Instant to avoid repeated parsing,
      * which significantly improves performance when filtering by date.
-     * 
+     *
      * @return The parsed Instant, or null if timestamp is null or invalid
      */
     @com.fasterxml.jackson.annotation.JsonIgnore
@@ -218,6 +229,11 @@ public class Event {
 
         public Builder uuid(String uuid) {
             event.uuid = uuid;
+            return this;
+        }
+
+        public Builder visitId(String visitId) {
+            event.visitId = visitId;
             return this;
         }
 

@@ -11,12 +11,12 @@ import java.util.Map;
 
 /**
  * NOW function - Returns the current timestamp.
- * 
+ *
  * Usage: NOW()
- * 
+ *
  * Examples:
  * - NOW() -> "2023-01-15T10:30:00Z"
- * 
+ *
  * This function returns the current evaluation time, which is typically set
  * at the start of expression evaluation. This ensures consistent "now" values
  * throughout a single evaluation.
@@ -42,14 +42,14 @@ public class NowFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
         validateArgCount(args, 0);
-        
+
         // Get the current timestamp from context (or use actual current time)
         Instant now = getNow(env);
-        
+
         // Return as ISO-8601 formatted string
         return new AviatorString(now.toString());
     }
-    
+
     // Override the no-argument call method for AviatorScript compatibility
     @Override
     public AviatorObject call(Map<String, Object> env) {

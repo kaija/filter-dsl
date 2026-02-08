@@ -11,15 +11,15 @@ import java.util.Map;
 
 /**
  * ABS function - Returns the absolute value of a numeric operand.
- * 
+ *
  * Usage: ABS(n)
- * 
+ *
  * Examples:
  * - ABS(5) -> 5
  * - ABS(-5) -> 5
  * - ABS(0) -> 0
  * - ABS(-10.5) -> 10.5
- * 
+ *
  * The function requires exactly 1 numeric argument.
  * Returns a numeric value (double) representing the absolute value.
  */
@@ -45,10 +45,10 @@ public class AbsFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         validateArgCount(new AviatorObject[]{arg1}, 1);
-        
+
         Number num = toNumber(arg1, env);
         double result = Math.abs(num.doubleValue());
-        
+
         return AviatorDouble.valueOf(result);
     }
 

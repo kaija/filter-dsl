@@ -12,16 +12,16 @@ import java.util.Map;
 
 /**
  * UPPER function - Converts a string to uppercase.
- * 
+ *
  * Usage: UPPER(string)
- * 
+ *
  * Examples:
  * - UPPER("hello") -> "HELLO"
  * - UPPER("Hello World") -> "HELLO WORLD"
  * - UPPER("ALREADY UPPER") -> "ALREADY UPPER"
  * - UPPER("") -> ""
  * - UPPER(null) -> null
- * 
+ *
  * The function converts all characters in the string to uppercase using the default locale.
  * Null inputs are handled gracefully - returns null if the argument is null.
  */
@@ -47,18 +47,18 @@ public class UpperFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         validateArgCount(new AviatorObject[]{arg1}, 1);
-        
+
         // Convert argument to string
         String str = toString(arg1, env);
-        
+
         // Handle null input gracefully
         if (str == null) {
             return AviatorNil.NIL;
         }
-        
+
         // Convert to uppercase
         String result = str.toUpperCase();
-        
+
         return new AviatorString(result);
     }
 

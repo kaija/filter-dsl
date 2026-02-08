@@ -5,7 +5,7 @@ import java.time.Instant;
 /**
  * Represents a time range for filtering events.
  * Time ranges are defined relative to a reference time (typically "now").
- * 
+ *
  * Example: FROM(30, D) TO(0, D) means "from 30 days ago to now"
  */
 public class TimeRange {
@@ -15,8 +15,8 @@ public class TimeRange {
     private final TimeUnit toUnit;
     private final Instant referenceTime;
 
-    public TimeRange(Integer fromValue, TimeUnit fromUnit, 
-                     Integer toValue, TimeUnit toUnit, 
+    public TimeRange(Integer fromValue, TimeUnit fromUnit,
+                     Integer toValue, TimeUnit toUnit,
                      Instant referenceTime) {
         this.fromValue = fromValue;
         this.fromUnit = fromUnit;
@@ -27,7 +27,7 @@ public class TimeRange {
 
     /**
      * Get the start time of the range.
-     * 
+     *
      * @return The start instant
      */
     public Instant getStartTime() {
@@ -39,7 +39,7 @@ public class TimeRange {
 
     /**
      * Get the end time of the range.
-     * 
+     *
      * @return The end instant
      */
     public Instant getEndTime() {
@@ -51,7 +51,7 @@ public class TimeRange {
 
     /**
      * Subtract a time unit from an instant, handling units that Instant doesn't support directly.
-     * 
+     *
      * @param instant The instant to subtract from
      * @param value The amount to subtract
      * @param unit The time unit
@@ -76,7 +76,7 @@ public class TimeRange {
 
     /**
      * Check if a timestamp falls within this time range.
-     * 
+     *
      * @param timestamp The timestamp to check
      * @return true if the timestamp is within the range (inclusive)
      */

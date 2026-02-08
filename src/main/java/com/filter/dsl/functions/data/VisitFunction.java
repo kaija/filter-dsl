@@ -12,9 +12,9 @@ import java.util.Map;
 
 /**
  * VISIT function - Access visit (session) properties.
- * 
+ *
  * Usage: VISIT("property_name")
- * 
+ *
  * Visit properties include session-specific information:
  * - uuid: Visit unique identifier
  * - timestamp: Visit start timestamp
@@ -29,7 +29,7 @@ import java.util.Map;
  * - browser: Browser name (e.g., "Chrome", "Safari", "Firefox")
  * - device: Device type (e.g., "Desktop", "Mobile", "Tablet")
  * - screen: Screen resolution (e.g., "1920x1080")
- * 
+ *
  * Examples:
  * - VISIT("os") -> "Windows"
  * - VISIT("browser") -> "Chrome"
@@ -37,7 +37,7 @@ import java.util.Map;
  * - VISIT("landing_page") -> "/home"
  * - VISIT("referrer_type") -> "search"
  * - VISIT("is_first_visit") -> true
- * 
+ *
  * Note: Device attributes (os, browser, device, screen) are session-specific
  * because users may switch devices between sessions.
  */
@@ -63,16 +63,16 @@ public class VisitFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
         validateArgCount(args, 1);
-        
+
         String propertyName = toString(args[0], env);
-        
+
         if (propertyName == null) {
             return AviatorRuntimeJavaType.valueOf(null);
         }
-        
+
         // Get current visit from context
         Object currentVisit = env.get("currentVisit");
-        
+
         // If no current visit, try to get from userData
         if (currentVisit == null) {
             Object userData = getUserData(env);
@@ -100,14 +100,14 @@ public class VisitFunction extends DSLFunction {
                 }
             }
         }
-        
+
         if (currentVisit == null) {
             return AviatorRuntimeJavaType.valueOf(null);
         }
-        
+
         // Extract property from visit
         Object value = null;
-        
+
         if (currentVisit instanceof Visit) {
             Visit visit = (Visit) currentVisit;
             value = extractVisitProperty(visit, propertyName);
@@ -115,13 +115,13 @@ public class VisitFunction extends DSLFunction {
             // Handle visit as map
             value = ((Map<?, ?>) currentVisit).get(propertyName);
         }
-        
+
         return AviatorRuntimeJavaType.valueOf(value);
     }
-    
+
     /**
      * Extract a property from a Visit object.
-     * 
+     *
      * @param visit The visit object
      * @param propertyName The property name
      * @return The property value, or null if not found
@@ -164,7 +164,7 @@ public class VisitFunction extends DSLFunction {
                 return null;
         }
     }
-    
+
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         return call(env, new AviatorObject[]{arg1});

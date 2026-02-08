@@ -11,9 +11,9 @@ import java.util.Map;
 
 /**
  * ENDS_WITH function - Returns true if the string ends with the suffix.
- * 
+ *
  * Usage: ENDS_WITH(string, suffix)
- * 
+ *
  * Examples:
  * - ENDS_WITH("hello world", "world") -> true
  * - ENDS_WITH("hello world", "hello") -> false
@@ -21,7 +21,7 @@ import java.util.Map;
  * - ENDS_WITH("hello", "Hello") -> false (case-sensitive)
  * - ENDS_WITH("", "test") -> false
  * - ENDS_WITH("test", "") -> true (any string ends with empty string)
- * 
+ *
  * The function performs case-sensitive suffix matching.
  * Null inputs are handled gracefully - returns false if either argument is null.
  */
@@ -48,19 +48,19 @@ public class EndsWithFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
         validateArgCount(new AviatorObject[]{arg1, arg2}, 2);
-        
+
         // Convert arguments to strings
         String str = toString(arg1, env);
         String suffix = toString(arg2, env);
-        
+
         // Handle null inputs gracefully
         if (str == null || suffix == null) {
             return AviatorBoolean.FALSE;
         }
-        
+
         // Check if string ends with suffix (case-sensitive)
         boolean result = str.endsWith(suffix);
-        
+
         return result ? AviatorBoolean.TRUE : AviatorBoolean.FALSE;
     }
 

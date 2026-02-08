@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  * REVERSE function - reverses a string.
- * 
+ *
  * Usage: REVERSE("hello") returns "olleh"
  */
 public class ReverseFunction extends DSLFunction {
@@ -37,15 +37,15 @@ public class ReverseFunction extends DSLFunction {
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         // Convert argument to string
         String input = toString(arg1, env);
-        
+
         // Handle null input
         if (input == null) {
             return new AviatorString("");
         }
-        
+
         // Reverse the string
         String reversed = new StringBuilder(input).reverse().toString();
-        
+
         // Return as AviatorString
         return new AviatorString(reversed);
     }
@@ -54,7 +54,7 @@ public class ReverseFunction extends DSLFunction {
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
         // Validate argument count
         validateArgCount(args, 1);
-        
+
         // Delegate to the single-argument version
         return call(env, args[0]);
     }

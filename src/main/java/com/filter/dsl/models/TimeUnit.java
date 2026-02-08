@@ -25,7 +25,7 @@ public enum TimeUnit {
 
     /**
      * Parse a time unit string to TimeUnit enum.
-     * 
+     *
      * @param unit The unit string (case-insensitive)
      * @return The TimeUnit enum value
      * @throws IllegalArgumentException if unit is not recognized
@@ -34,7 +34,7 @@ public enum TimeUnit {
         if (unit == null) {
             throw new IllegalArgumentException("Time unit cannot be null");
         }
-        
+
         String upperUnit = unit.toUpperCase();
         try {
             return TimeUnit.valueOf(upperUnit);

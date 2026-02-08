@@ -245,10 +245,81 @@ public class ComprehensiveFunctionBenchmark {
             data);
     }
     
-    // ========== SCALABILITY TEST ==========
+    // ========== VISIT FUNCTION TESTS ==========
     
     @Test
     @Order(9)
+    void benchmarkVisitFunction() {
+        System.out.println("\n### VISIT FUNCTION (Device Attributes) ###");
+        UserData data = TestDataGenerator.generateLargeDataset();
+        
+        // Basic device attribute access
+        benchmarkFunction("VISIT_OS", 
+            "COUNT(WHERE(EVENT(\"purchase\"), EQ(VISIT(\"os\"), \"Windows\")))", 
+            data);
+        
+        benchmarkFunction("VISIT_BROWSER", 
+            "COUNT(WHERE(EVENT(\"purchase\"), EQ(VISIT(\"browser\"), \"Chrome\")))", 
+            data);
+        
+        benchmarkFunction("VISIT_DEVICE", 
+            "COUNT(WHERE(EVENT(\"purchase\"), EQ(VISIT(\"device\"), \"Desktop\")))", 
+            data);
+        
+        benchmarkFunction("VISIT_SCREEN", 
+            "COUNT(WHERE(EVENT(\"purchase\"), CONTAINS(VISIT(\"screen\"), \"1920\")))", 
+            data);
+        
+        // Visit session attributes
+        benchmarkFunction("VISIT_LANDING_PAGE", 
+            "COUNT(WHERE(EVENT(\"purchase\"), EQ(VISIT(\"landing_page\"), \"/home\")))", 
+            data);
+        
+        benchmarkFunction("VISIT_REFERRER", 
+            "COUNT(WHERE(EVENT(\"purchase\"), EQ(VISIT(\"referrer_type\"), \"search\")))", 
+            data);
+        
+        benchmarkFunction("VISIT_DURATION", 
+            "COUNT(WHERE(EVENT(\"purchase\"), GT(VISIT(\"duration\"), 300)))", 
+            data);
+        
+        benchmarkFunction("VISIT_IS_FIRST", 
+            "COUNT(WHERE(EVENT(\"purchase\"), EQ(VISIT(\"is_first_visit\"), true)))", 
+            data);
+        
+        // Complex VISIT queries
+        benchmarkFunction("VISIT_MOBILE_IOS", 
+            "COUNT(WHERE(EVENT(\"purchase\"), " +
+                "AND(" +
+                    "EQ(VISIT(\"device\"), \"Mobile\"), " +
+                    "EQ(VISIT(\"os\"), \"iOS\")" +
+                ")" +
+            "))", 
+            data);
+        
+        benchmarkFunction("VISIT_DEVICE_AMOUNT", 
+            "COUNT(WHERE(EVENT(\"purchase\"), " +
+                "AND(" +
+                    "EQ(VISIT(\"device\"), \"Mobile\"), " +
+                    "GT(PARAM(\"amount\"), 100)" +
+                ")" +
+            "))", 
+            data);
+        
+        benchmarkFunction("VISIT_FIRST_SEARCH", 
+            "COUNT(WHERE(EVENT(\"purchase\"), " +
+                "AND(" +
+                    "EQ(VISIT(\"is_first_visit\"), true), " +
+                    "EQ(VISIT(\"referrer_type\"), \"search\")" +
+                ")" +
+            "))", 
+            data);
+    }
+    
+    // ========== SCALABILITY TEST ==========
+    
+    @Test
+    @Order(10)
     void benchmarkScalability() {
         System.out.println("\n### SCALABILITY TEST ###");
         

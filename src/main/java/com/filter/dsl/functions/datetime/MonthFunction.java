@@ -16,14 +16,14 @@ import java.util.Map;
 
 /**
  * MONTH function - Returns the month (1-12).
- * 
+ *
  * Usage: MONTH(timestamp)
- * 
+ *
  * Examples:
  * - MONTH("2023-01-15T10:30:00Z") -> 1
  * - MONTH("2023-06-15T10:30:00Z") -> 6
  * - MONTH("2023-12-31T10:30:00Z") -> 12
- * 
+ *
  * The function extracts the month component from the timestamp.
  */
 public class MonthFunction extends DSLFunction {
@@ -48,29 +48,29 @@ public class MonthFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
         validateArgCount(args, 1);
-        
+
         String timestampStr = toString(args[0], env);
-        
+
         if (timestampStr == null) {
             return AviatorNil.NIL;
         }
-        
+
         try {
             // Parse the timestamp string to Instant
             Instant instant = Instant.parse(timestampStr);
-            
+
             // Convert to ZonedDateTime in UTC to get month
             int month = instant.atZone(ZoneId.of("UTC")).getMonthValue();
-            
+
             return AviatorLong.valueOf(month);
-            
+
         } catch (DateTimeParseException e) {
             throw new TypeMismatchException(
                 "Invalid timestamp format: " + timestampStr + ". Expected ISO-8601 format (e.g., 2023-01-15T10:30:00Z)"
             );
         }
     }
-    
+
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         return call(env, new AviatorObject[]{arg1});

@@ -12,9 +12,9 @@ import java.util.Map;
 
 /**
  * NOT function - Returns the logical negation of the operand.
- * 
+ *
  * Usage: NOT(expr)
- * 
+ *
  * Examples:
  * - NOT(true) -> false
  * - NOT(false) -> true
@@ -44,16 +44,16 @@ public class LogicalNotFunction extends DSLFunction {
         Boolean value = toBoolean(arg1, env);
         return value ? AviatorBoolean.FALSE : AviatorBoolean.TRUE;
     }
-    
+
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
         throw new FunctionArgumentException(getName() + " expects 1 argument, got 2");
     }
-    
+
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
         validateArgCount(args, 1);
-        
+
         Boolean value = toBoolean(args[0], env);
         return value ? AviatorBoolean.FALSE : AviatorBoolean.TRUE;
     }

@@ -16,14 +16,14 @@ import java.util.Map;
 
 /**
  * DAY_OF_MONTH function - Returns the day of month (1-31).
- * 
+ *
  * Usage: DAY_OF_MONTH(timestamp)
- * 
+ *
  * Examples:
  * - DAY_OF_MONTH("2023-01-15T10:30:00Z") -> 15
  * - DAY_OF_MONTH("2023-01-01T10:30:00Z") -> 1
  * - DAY_OF_MONTH("2023-01-31T10:30:00Z") -> 31
- * 
+ *
  * The function extracts the day component from the timestamp.
  */
 public class DayOfMonthFunction extends DSLFunction {
@@ -48,29 +48,29 @@ public class DayOfMonthFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
         validateArgCount(args, 1);
-        
+
         String timestampStr = toString(args[0], env);
-        
+
         if (timestampStr == null) {
             return AviatorNil.NIL;
         }
-        
+
         try {
             // Parse the timestamp string to Instant
             Instant instant = Instant.parse(timestampStr);
-            
+
             // Convert to ZonedDateTime in UTC to get day of month
             int dayOfMonth = instant.atZone(ZoneId.of("UTC")).getDayOfMonth();
-            
+
             return AviatorLong.valueOf(dayOfMonth);
-            
+
         } catch (DateTimeParseException e) {
             throw new TypeMismatchException(
                 "Invalid timestamp format: " + timestampStr + ". Expected ISO-8601 format (e.g., 2023-01-15T10:30:00Z)"
             );
         }
     }
-    
+
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         return call(env, new AviatorObject[]{arg1});

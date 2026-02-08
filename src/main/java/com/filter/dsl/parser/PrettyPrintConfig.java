@@ -2,7 +2,7 @@ package com.filter.dsl.parser;
 
 /**
  * Configuration options for DSL expression pretty printing.
- * 
+ *
  * This class provides configurable formatting options including:
  * - Indent size (number of spaces per indentation level)
  * - Line width (maximum characters per line before wrapping)
@@ -10,12 +10,12 @@ package com.filter.dsl.parser;
  * - Indent style (spaces vs tabs)
  */
 public class PrettyPrintConfig {
-    
+
     private final int indentSize;
     private final int lineWidth;
     private final boolean compactMode;
     private final boolean useTabs;
-    
+
     /**
      * Default configuration:
      * - 2 spaces per indent level
@@ -24,14 +24,14 @@ public class PrettyPrintConfig {
      * - Use spaces (not tabs)
      */
     public static final PrettyPrintConfig DEFAULT = new Builder().build();
-    
+
     /**
      * Compact configuration for single-line output.
      */
     public static final PrettyPrintConfig COMPACT = new Builder()
         .compactMode(true)
         .build();
-    
+
     /**
      * Wide format configuration for deeply nested expressions.
      */
@@ -39,30 +39,30 @@ public class PrettyPrintConfig {
         .lineWidth(120)
         .indentSize(4)
         .build();
-    
+
     private PrettyPrintConfig(Builder builder) {
         this.indentSize = builder.indentSize;
         this.lineWidth = builder.lineWidth;
         this.compactMode = builder.compactMode;
         this.useTabs = builder.useTabs;
     }
-    
+
     public int getIndentSize() {
         return indentSize;
     }
-    
+
     public int getLineWidth() {
         return lineWidth;
     }
-    
+
     public boolean isCompactMode() {
         return compactMode;
     }
-    
+
     public boolean useTabs() {
         return useTabs;
     }
-    
+
     /**
      * Get the indent string for a given level.
      */
@@ -70,14 +70,14 @@ public class PrettyPrintConfig {
         if (level <= 0) {
             return "";
         }
-        
+
         if (useTabs) {
             return "\t".repeat(level);
         } else {
             return " ".repeat(indentSize * level);
         }
     }
-    
+
     /**
      * Builder for creating custom PrettyPrintConfig instances.
      */
@@ -86,7 +86,7 @@ public class PrettyPrintConfig {
         private int lineWidth = 80;
         private boolean compactMode = false;
         private boolean useTabs = false;
-        
+
         public Builder indentSize(int indentSize) {
             if (indentSize < 0) {
                 throw new IllegalArgumentException("Indent size must be non-negative");
@@ -94,7 +94,7 @@ public class PrettyPrintConfig {
             this.indentSize = indentSize;
             return this;
         }
-        
+
         public Builder lineWidth(int lineWidth) {
             if (lineWidth < 20) {
                 throw new IllegalArgumentException("Line width must be at least 20");
@@ -102,17 +102,17 @@ public class PrettyPrintConfig {
             this.lineWidth = lineWidth;
             return this;
         }
-        
+
         public Builder compactMode(boolean compactMode) {
             this.compactMode = compactMode;
             return this;
         }
-        
+
         public Builder useTabs(boolean useTabs) {
             this.useTabs = useTabs;
             return this;
         }
-        
+
         public PrettyPrintConfig build() {
             return new PrettyPrintConfig(this);
         }

@@ -607,4 +607,269 @@ class DataAccessFunctionsTest {
         assertNotNull(paramFunc.call(env, new AviatorString("amount")).getValue(env));
         assertNotNull(paramFunc.call(env, new AviatorString("utm_source")).getValue(env));
     }
+
+    // ========== VISIT Function Tests ==========
+
+    @Test
+    void testVisitGetUuid() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .timestamp("2024-01-15T10:00:00Z")
+            .landingPage("/home")
+            .build();
+        env.put("currentVisit", visit);
+        
+        AviatorObject result = visitFunc.call(env, new AviatorString("uuid"));
+        assertEquals("visit-123", result.getValue(env));
+    }
+
+    @Test
+    void testVisitGetTimestamp() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .timestamp("2024-01-15T10:00:00Z")
+            .build();
+        env.put("currentVisit", visit);
+        
+        AviatorObject result = visitFunc.call(env, new AviatorString("timestamp"));
+        assertEquals("2024-01-15T10:00:00Z", result.getValue(env));
+    }
+
+    @Test
+    void testVisitGetLandingPage() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .landingPage("/home")
+            .build();
+        env.put("currentVisit", visit);
+        
+        AviatorObject result = visitFunc.call(env, new AviatorString("landing_page"));
+        assertEquals("/home", result.getValue(env));
+    }
+
+    @Test
+    void testVisitGetReferrerType() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .referrerType("search")
+            .build();
+        env.put("currentVisit", visit);
+        
+        AviatorObject result = visitFunc.call(env, new AviatorString("referrer_type"));
+        assertEquals("search", result.getValue(env));
+    }
+
+    @Test
+    void testVisitGetReferrerUrl() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .referrerUrl("https://google.com")
+            .build();
+        env.put("currentVisit", visit);
+        
+        AviatorObject result = visitFunc.call(env, new AviatorString("referrer_url"));
+        assertEquals("https://google.com", result.getValue(env));
+    }
+
+    @Test
+    void testVisitGetDuration() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .duration(300)
+            .build();
+        env.put("currentVisit", visit);
+        
+        AviatorObject result = visitFunc.call(env, new AviatorString("duration"));
+        assertEquals(300, result.getValue(env));
+    }
+
+    @Test
+    void testVisitGetActions() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .actions(5)
+            .build();
+        env.put("currentVisit", visit);
+        
+        AviatorObject result = visitFunc.call(env, new AviatorString("actions"));
+        assertEquals(5, result.getValue(env));
+    }
+
+    @Test
+    void testVisitGetIsFirstVisit() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .isFirstVisit(true)
+            .build();
+        env.put("currentVisit", visit);
+        
+        AviatorObject result = visitFunc.call(env, new AviatorString("is_first_visit"));
+        assertEquals(true, result.getValue(env));
+    }
+
+    @Test
+    void testVisitGetOs() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .os("Windows")
+            .build();
+        env.put("currentVisit", visit);
+        
+        AviatorObject result = visitFunc.call(env, new AviatorString("os"));
+        assertEquals("Windows", result.getValue(env));
+    }
+
+    @Test
+    void testVisitGetBrowser() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .browser("Chrome")
+            .build();
+        env.put("currentVisit", visit);
+        
+        AviatorObject result = visitFunc.call(env, new AviatorString("browser"));
+        assertEquals("Chrome", result.getValue(env));
+    }
+
+    @Test
+    void testVisitGetDevice() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .device("Desktop")
+            .build();
+        env.put("currentVisit", visit);
+        
+        AviatorObject result = visitFunc.call(env, new AviatorString("device"));
+        assertEquals("Desktop", result.getValue(env));
+    }
+
+    @Test
+    void testVisitGetScreen() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .screen("1920x1080")
+            .build();
+        env.put("currentVisit", visit);
+        
+        AviatorObject result = visitFunc.call(env, new AviatorString("screen"));
+        assertEquals("1920x1080", result.getValue(env));
+    }
+
+    @Test
+    void testVisitNonExistentField() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .build();
+        env.put("currentVisit", visit);
+        
+        AviatorObject result = visitFunc.call(env, new AviatorString("nonexistent"));
+        assertNull(result.getValue(env));
+    }
+
+    @Test
+    void testVisitNullFieldName() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .build();
+        env.put("currentVisit", visit);
+        
+        AviatorObject result = visitFunc.call(env, createAviatorObject(null));
+        assertNull(result.getValue(env));
+    }
+
+    @Test
+    void testVisitNoCurrentVisit() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        Map<String, Object> emptyEnv = new HashMap<>();
+        
+        AviatorObject result = visitFunc.call(emptyEnv, new AviatorString("os"));
+        assertNull(result.getValue(emptyEnv));
+    }
+
+    @Test
+    void testVisitFromUserData() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .os("macOS")
+            .browser("Safari")
+            .device("Mobile")
+            .build();
+        
+        Map<String, com.filter.dsl.models.Visit> visits = new HashMap<>();
+        visits.put("visit-123", visit);
+        
+        UserData userData = UserData.builder()
+            .profile(profile)
+            .visits(visits)
+            .build();
+        
+        Map<String, Object> testEnv = new HashMap<>();
+        testEnv.put("userData", userData);
+        
+        AviatorObject result = visitFunc.call(testEnv, new AviatorString("os"));
+        assertEquals("macOS", result.getValue(testEnv));
+    }
+
+    @Test
+    void testVisitWithWrongArgumentCount() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        assertThrows(IllegalArgumentException.class, () -> {
+            visitFunc.call(env, new AviatorString("os"), new AviatorString("browser"));
+        });
+    }
+
+    @Test
+    void testVisitWithNoArguments() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        assertThrows(FunctionArgumentException.class, () -> {
+            visitFunc.call(env, new AviatorObject[0]);
+        });
+    }
+
+    @Test
+    void testVisitMetadata() {
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        assertEquals("VISIT", visitFunc.getName());
+        assertEquals(1, visitFunc.getFunctionMetadata().getMinArgs());
+        assertEquals(1, visitFunc.getFunctionMetadata().getMaxArgs());
+        assertTrue(visitFunc.getFunctionMetadata().getDescription().contains("visit"));
+    }
+
+    @Test
+    void testVisitDeviceAttributesInSession() {
+        // Test that device attributes are correctly accessed from visit (session-level)
+        com.filter.dsl.functions.data.VisitFunction visitFunc = new com.filter.dsl.functions.data.VisitFunction();
+        
+        com.filter.dsl.models.Visit visit = com.filter.dsl.models.Visit.builder()
+            .uuid("visit-123")
+            .os("iOS")
+            .browser("Safari")
+            .device("Mobile")
+            .screen("375x667")
+            .build();
+        
+        env.put("currentVisit", visit);
+        
+        assertEquals("iOS", visitFunc.call(env, new AviatorString("os")).getValue(env));
+        assertEquals("Safari", visitFunc.call(env, new AviatorString("browser")).getValue(env));
+        assertEquals("Mobile", visitFunc.call(env, new AviatorString("device")).getValue(env));
+        assertEquals("375x667", visitFunc.call(env, new AviatorString("screen")).getValue(env));
+    }
 }
+

@@ -11,9 +11,9 @@ import java.util.Map;
 
 /**
  * POW function - Returns base raised to the power of exponent.
- * 
+ *
  * Usage: POW(base, exponent)
- * 
+ *
  * Examples:
  * - POW(2, 3) -> 8.0 (2^3)
  * - POW(5, 2) -> 25.0 (5^2)
@@ -21,7 +21,7 @@ import java.util.Map;
  * - POW(2, -1) -> 0.5 (2^-1)
  * - POW(4, 0.5) -> 2.0 (square root of 4)
  * - POW(27, 1/3) -> 3.0 (cube root of 27)
- * 
+ *
  * The function requires exactly 2 numeric arguments.
  * Returns a numeric value (double) representing base^exponent.
  */
@@ -48,12 +48,12 @@ public class PowFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
         validateArgCount(new AviatorObject[]{arg1, arg2}, 2);
-        
+
         Number base = toNumber(arg1, env);
         Number exponent = toNumber(arg2, env);
-        
+
         double result = Math.pow(base.doubleValue(), exponent.doubleValue());
-        
+
         return AviatorDouble.valueOf(result);
     }
 

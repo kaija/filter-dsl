@@ -20,7 +20,7 @@ public class BucketDefinition {
     /**
      * Find the bucket label for a given value.
      * Returns the label of the first matching range, or the default label if no match.
-     * 
+     *
      * @param value The value to bucket
      * @return The bucket label, or default label if no match
      */

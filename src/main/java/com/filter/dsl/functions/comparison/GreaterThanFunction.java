@@ -11,15 +11,15 @@ import java.util.Map;
 
 /**
  * GT (Greater Than) function - Returns true if the first operand is greater than the second.
- * 
+ *
  * Usage: GT(a, b)
- * 
+ *
  * Examples:
  * - GT(5, 3) -> true
  * - GT(3, 5) -> false
  * - GT(5, 5) -> false
  * - GT(10.5, 10.2) -> true
- * 
+ *
  * The function performs numeric comparison with proper type coercion.
  * Both arguments must be numeric values.
  */
@@ -46,14 +46,14 @@ public class GreaterThanFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
         validateArgCount(new AviatorObject[]{arg1, arg2}, 2);
-        
+
         Number value1 = toNumber(arg1, env);
         Number value2 = toNumber(arg2, env);
-        
+
         // Convert to double for comparison to handle mixed integer/decimal types
         double d1 = value1.doubleValue();
         double d2 = value2.doubleValue();
-        
+
         return d1 > d2 ? AviatorBoolean.TRUE : AviatorBoolean.FALSE;
     }
 

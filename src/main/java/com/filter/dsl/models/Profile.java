@@ -9,19 +9,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Profile {
     @JsonProperty("country")
     private String country;
-    
+
     @JsonProperty("city")
     private String city;
-    
+
     @JsonProperty("language")
     private String language;
-    
+
     @JsonProperty("continent")
     private String continent;
-    
+
     @JsonProperty("timezone")
     private String timezone;
-    
+
     @JsonProperty("uuid")
     private String uuid;
 

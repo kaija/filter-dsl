@@ -12,16 +12,16 @@ import java.util.Map;
 
 /**
  * LENGTH function - Returns the length of a string.
- * 
+ *
  * Usage: LENGTH(string)
- * 
+ *
  * Examples:
  * - LENGTH("hello") -> 5
  * - LENGTH("hello world") -> 11
  * - LENGTH("") -> 0
  * - LENGTH("  ") -> 2
  * - LENGTH(null) -> null
- * 
+ *
  * The function returns the number of characters in the string.
  * Whitespace characters are counted.
  * Null inputs are handled gracefully - returns null if the argument is null.
@@ -48,18 +48,18 @@ public class LengthFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         validateArgCount(new AviatorObject[]{arg1}, 1);
-        
+
         // Convert argument to string
         String str = toString(arg1, env);
-        
+
         // Handle null input gracefully
         if (str == null) {
             return AviatorNil.NIL;
         }
-        
+
         // Get string length
         int length = str.length();
-        
+
         return AviatorLong.valueOf(length);
     }
 

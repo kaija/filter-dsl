@@ -98,6 +98,35 @@ public class MaxFunction extends DSLFunction {
                 continue; // Skip null values
             }
             
+            // Handle Event objects - extract numeric parameters
+            if (item instanceof com.filter.dsl.models.Event) {
+                com.filter.dsl.models.Event event = (com.filter.dsl.models.Event) item;
+                Map<String, Object> params = event.getParameters();
+                
+                if (params != null) {
+                    // Find max among all numeric parameters from the event
+                    for (Object paramValue : params.values()) {
+                        if (paramValue instanceof Number) {
+                            if (maxValue == null) {
+                                maxValue = paramValue;
+                                if (paramValue instanceof Double || paramValue instanceof Float) {
+                                    hasDouble = true;
+                                }
+                            } else if (maxValue instanceof Number) {
+                                int comparison = compareNumbers((Number) paramValue, (Number) maxValue);
+                                if (comparison > 0) {
+                                    maxValue = paramValue;
+                                    if (paramValue instanceof Double || paramValue instanceof Float) {
+                                        hasDouble = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                continue;
+            }
+            
             if (maxValue == null) {
                 maxValue = item;
                 if (item instanceof Double || item instanceof Float) {

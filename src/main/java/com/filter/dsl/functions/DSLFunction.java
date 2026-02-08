@@ -12,20 +12,20 @@ import java.util.Map;
 
 /**
  * Abstract base class for all DSL functions.
- * 
+ *
  * This class provides a foundation for implementing custom DSL functions with:
  * - Argument validation helpers
  * - Type conversion utilities
  * - Context access methods for user data, events, visits, and time ranges
  * - Metadata support for function validation
- * 
+ *
  * Extension developers should:
  * 1. Extend this class
  * 2. Implement getName() to return the UPPERCASE function name
  * 3. Implement getFunctionMetadata() to provide function signature information
  * 4. Implement call() to define the function logic
  * 5. Register the function with FunctionRegistry
- * 
+ *
  * Example:
  * <pre>
  * public class CountFunction extends DSLFunction {
@@ -33,7 +33,7 @@ import java.util.Map;
  *     public String getName() {
  *         return "COUNT";
  *     }
- *     
+ *
  *     {@literal @}Override
  *     public FunctionMetadata getFunctionMetadata() {
  *         return FunctionMetadata.builder()
@@ -44,7 +44,7 @@ import java.util.Map;
  *             .returnType(ReturnType.NUMBER)
  *             .build();
  *     }
- *     
+ *
  *     {@literal @}Override
  *     public AviatorObject call(Map&lt;String, Object&gt; env, AviatorObject... args) {
  *         validateArgCount(args, 1);
@@ -59,7 +59,7 @@ public abstract class DSLFunction extends AbstractFunction {
     /**
      * Get the UPPERCASE function name.
      * This name is used in DSL expressions.
-     * 
+     *
      * @return The function name (must be UPPERCASE)
      */
     @Override
@@ -68,14 +68,14 @@ public abstract class DSLFunction extends AbstractFunction {
     /**
      * Get function metadata for validation.
      * Metadata includes argument count, types, and return type.
-     * 
+     *
      * @return Function metadata
      */
     public abstract FunctionMetadata getFunctionMetadata();
 
     /**
      * Execute the function with the given arguments.
-     * 
+     *
      * @param env The evaluation environment containing user data and context
      * @param args The function arguments as AviatorObjects
      * @return The function result as an AviatorObject
@@ -86,7 +86,7 @@ public abstract class DSLFunction extends AbstractFunction {
 
     /**
      * Validate that the function received exactly the expected number of arguments.
-     * 
+     *
      * @param args The function arguments
      * @param expected The expected argument count
      * @throws FunctionArgumentException if argument count doesn't match
@@ -101,7 +101,7 @@ public abstract class DSLFunction extends AbstractFunction {
 
     /**
      * Validate that the function received an argument count within the specified range.
-     * 
+     *
      * @param args The function arguments
      * @param min The minimum argument count (inclusive)
      * @param max The maximum argument count (inclusive)
@@ -117,7 +117,7 @@ public abstract class DSLFunction extends AbstractFunction {
 
     /**
      * Validate that the function received at least the minimum number of arguments.
-     * 
+     *
      * @param args The function arguments
      * @param min The minimum argument count (inclusive)
      * @throws FunctionArgumentException if argument count is less than minimum
@@ -134,7 +134,7 @@ public abstract class DSLFunction extends AbstractFunction {
 
     /**
      * Get the complete user data from the evaluation context.
-     * 
+     *
      * @param env The evaluation environment
      * @return The user data object, or null if not present
      */
@@ -145,7 +145,7 @@ public abstract class DSLFunction extends AbstractFunction {
     /**
      * Get the current event being evaluated from the context.
      * This is set when evaluating expressions in an event-specific context.
-     * 
+     *
      * @param env The evaluation environment
      * @return The current event, or null if not in event context
      */
@@ -156,7 +156,7 @@ public abstract class DSLFunction extends AbstractFunction {
     /**
      * Get the current visit being evaluated from the context.
      * This is set when evaluating expressions in a visit-specific context.
-     * 
+     *
      * @param env The evaluation environment
      * @return The current visit, or null if not in visit context
      */
@@ -167,7 +167,7 @@ public abstract class DSLFunction extends AbstractFunction {
     /**
      * Get the current timestamp for evaluation.
      * This is typically set to the time when evaluation started.
-     * 
+     *
      * @param env The evaluation environment
      * @return The current timestamp, or Instant.now() if not set
      */
@@ -179,7 +179,7 @@ public abstract class DSLFunction extends AbstractFunction {
     /**
      * Get the time range filter from the context.
      * This is set by FROM/TO functions to filter events by time.
-     * 
+     *
      * @param env The evaluation environment
      * @return The time range, or null if not set
      */
@@ -191,7 +191,7 @@ public abstract class DSLFunction extends AbstractFunction {
 
     /**
      * Convert an AviatorObject to a Number.
-     * 
+     *
      * @param obj The AviatorObject to convert
      * @param env The evaluation environment
      * @return The numeric value
@@ -209,7 +209,7 @@ public abstract class DSLFunction extends AbstractFunction {
 
     /**
      * Convert an AviatorObject to a String.
-     * 
+     *
      * @param obj The AviatorObject to convert
      * @param env The evaluation environment
      * @return The string value, or null if the value is null
@@ -221,7 +221,7 @@ public abstract class DSLFunction extends AbstractFunction {
 
     /**
      * Convert an AviatorObject to a Boolean.
-     * 
+     *
      * @param obj The AviatorObject to convert
      * @param env The evaluation environment
      * @return The boolean value
@@ -239,7 +239,7 @@ public abstract class DSLFunction extends AbstractFunction {
 
     /**
      * Convert an AviatorObject to a Collection.
-     * 
+     *
      * @param obj The AviatorObject to convert
      * @param env The evaluation environment
      * @return The collection value
@@ -257,7 +257,7 @@ public abstract class DSLFunction extends AbstractFunction {
 
     /**
      * Safely get a value from an AviatorObject, returning null if the object is null.
-     * 
+     *
      * @param obj The AviatorObject to get value from
      * @param env The evaluation environment
      * @return The value, or null if obj is null

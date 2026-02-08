@@ -11,16 +11,16 @@ import java.util.Map;
 
 /**
  * CONCAT function - Concatenates multiple strings together.
- * 
+ *
  * Usage: CONCAT(str1, str2, ..., strN)
- * 
+ *
  * Examples:
  * - CONCAT("hello", " ", "world") -> "hello world"
  * - CONCAT("a", "b", "c") -> "abc"
  * - CONCAT("hello") -> "hello"
  * - CONCAT("", "world") -> "world"
  * - CONCAT("hello", null, "world") -> "hellonullworld"
- * 
+ *
  * The function concatenates all arguments into a single string.
  * Null arguments are converted to the string "null".
  * At least one argument is required.
@@ -192,10 +192,10 @@ public class ConcatFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
         validateMinArgCount(args, 1);
-        
+
         // Build concatenated string
         StringBuilder result = new StringBuilder();
-        
+
         for (AviatorObject arg : args) {
             String str = toString(arg, env);
             if (str != null) {
@@ -204,7 +204,7 @@ public class ConcatFunction extends DSLFunction {
                 result.append("null");
             }
         }
-        
+
         return new AviatorString(result.toString());
     }
 }

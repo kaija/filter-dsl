@@ -14,20 +14,20 @@ import java.util.HashMap;
 
 /**
  * CONVERT_UNIT function - Converts values between different units of measurement.
- * 
+ *
  * Usage: CONVERT_UNIT(value, from_unit, to_unit)
- * 
+ *
  * Supported unit categories:
- * 
+ *
  * **Time Units:**
  * - seconds, minutes, hours, days, weeks, months, years
- * 
+ *
  * **Distance Units:**
  * - meters, kilometers, miles, feet
- * 
+ *
  * **Weight Units:**
  * - grams, kilograms, pounds, ounces
- * 
+ *
  * Examples:
  * - CONVERT_UNIT(60, "seconds", "minutes") -> 1.0
  * - CONVERT_UNIT(1, "hours", "minutes") -> 60.0
@@ -37,13 +37,13 @@ import java.util.HashMap;
  * - CONVERT_UNIT(1, "pounds", "ounces") -> 16.0
  * - CONVERT_UNIT(365, "days", "years") -> 1.0
  * - CONVERT_UNIT(2, "weeks", "days") -> 14.0
- * 
+ *
  * Error cases:
  * - Unknown units -> Error
  * - Incompatible unit categories (e.g., converting time to distance) -> Error
  * - Non-numeric value -> Error
  * - Null value -> Error
- * 
+ *
  * Requirements: 10.4, 10.5, 10.6, 10.8
  */
 public class ConvertUnitFunction extends DSLFunction {
@@ -55,7 +55,7 @@ public class ConvertUnitFunction extends DSLFunction {
     private static final Map<String, Double> DISTANCE_UNITS = new HashMap<>();
     // Weight: base unit is grams
     private static final Map<String, Double> WEIGHT_UNITS = new HashMap<>();
-    
+
     static {
         // Time conversions (to seconds)
         TIME_UNITS.put("seconds", 1.0);
@@ -72,7 +72,7 @@ public class ConvertUnitFunction extends DSLFunction {
         TIME_UNITS.put("month", 2592000.0);
         TIME_UNITS.put("years", 31536000.0); // 365 days
         TIME_UNITS.put("year", 31536000.0);
-        
+
         // Distance conversions (to meters)
         DISTANCE_UNITS.put("meters", 1.0);
         DISTANCE_UNITS.put("meter", 1.0);
@@ -85,7 +85,7 @@ public class ConvertUnitFunction extends DSLFunction {
         DISTANCE_UNITS.put("feet", 0.3048);
         DISTANCE_UNITS.put("foot", 0.3048);
         DISTANCE_UNITS.put("ft", 0.3048);
-        
+
         // Weight conversions (to grams)
         WEIGHT_UNITS.put("grams", 1.0);
         WEIGHT_UNITS.put("gram", 1.0);
@@ -124,7 +124,7 @@ public class ConvertUnitFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
         validateArgCount(args, 3);
-        
+
         // Get the value to convert
         Object valueObj = getValue(args[0], env);
         if (valueObj == null) {
@@ -132,39 +132,39 @@ public class ConvertUnitFunction extends DSLFunction {
                 "CONVERT_UNIT cannot convert null value"
             );
         }
-        
+
         if (!(valueObj instanceof Number)) {
             throw new TypeMismatchException(
                 "CONVERT_UNIT expects a numeric value, got " + valueObj.getClass().getSimpleName()
             );
         }
-        
+
         double value = ((Number) valueObj).doubleValue();
-        
+
         // Get the from and to units
         Object fromUnitObj = getValue(args[1], env);
         Object toUnitObj = getValue(args[2], env);
-        
+
         if (fromUnitObj == null || toUnitObj == null) {
             throw new FunctionArgumentException(
                 "CONVERT_UNIT requires non-null unit names"
             );
         }
-        
+
         String fromUnit = fromUnitObj.toString().toLowerCase().trim();
         String toUnit = toUnitObj.toString().toLowerCase().trim();
-        
+
         // Determine which unit category and perform conversion
         UnitCategory category = determineUnitCategory(fromUnit, toUnit);
-        
+
         double result = convertValue(value, fromUnit, toUnit, category);
-        
+
         return AviatorDouble.valueOf(result);
     }
 
     /**
      * Determine which unit category the units belong to.
-     * 
+     *
      * @param fromUnit The source unit
      * @param toUnit The target unit
      * @return The unit category
@@ -177,7 +177,7 @@ public class ConvertUnitFunction extends DSLFunction {
         boolean toIsDistance = DISTANCE_UNITS.containsKey(toUnit);
         boolean fromIsWeight = WEIGHT_UNITS.containsKey(fromUnit);
         boolean toIsWeight = WEIGHT_UNITS.containsKey(toUnit);
-        
+
         // Check if both units are in the same category
         if (fromIsTime && toIsTime) {
             return UnitCategory.TIME;
@@ -186,7 +186,7 @@ public class ConvertUnitFunction extends DSLFunction {
         } else if (fromIsWeight && toIsWeight) {
             return UnitCategory.WEIGHT;
         }
-        
+
         // Check if units are unknown
         if (!fromIsTime && !fromIsDistance && !fromIsWeight) {
             throw new FunctionArgumentException(
@@ -196,7 +196,7 @@ public class ConvertUnitFunction extends DSLFunction {
                 "weight (grams, kilograms, pounds, ounces)"
             );
         }
-        
+
         if (!toIsTime && !toIsDistance && !toIsWeight) {
             throw new FunctionArgumentException(
                 "CONVERT_UNIT: Unknown unit '" + toUnit + "'. " +
@@ -205,7 +205,7 @@ public class ConvertUnitFunction extends DSLFunction {
                 "weight (grams, kilograms, pounds, ounces)"
             );
         }
-        
+
         // Units are from different categories
         throw new FunctionArgumentException(
             "CONVERT_UNIT: Cannot convert between incompatible unit types. " +
@@ -215,7 +215,7 @@ public class ConvertUnitFunction extends DSLFunction {
 
     /**
      * Convert a value from one unit to another within the same category.
-     * 
+     *
      * @param value The value to convert
      * @param fromUnit The source unit
      * @param toUnit The target unit
@@ -224,7 +224,7 @@ public class ConvertUnitFunction extends DSLFunction {
      */
     private double convertValue(double value, String fromUnit, String toUnit, UnitCategory category) {
         Map<String, Double> conversionTable;
-        
+
         switch (category) {
             case TIME:
                 conversionTable = TIME_UNITS;
@@ -238,14 +238,14 @@ public class ConvertUnitFunction extends DSLFunction {
             default:
                 throw new IllegalStateException("Unknown unit category: " + category);
         }
-        
+
         // Convert to base unit, then to target unit
         double fromFactor = conversionTable.get(fromUnit);
         double toFactor = conversionTable.get(toUnit);
-        
+
         double baseValue = value * fromFactor;
         double result = baseValue / toFactor;
-        
+
         return result;
     }
 

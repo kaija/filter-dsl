@@ -21,7 +21,7 @@ public class ParseResult {
 
     /**
      * Check if the expression is valid.
-     * 
+     *
      * @return true if the expression passed all validation checks
      */
     public boolean isValid() {
@@ -30,7 +30,7 @@ public class ParseResult {
 
     /**
      * Get the error message if validation failed.
-     * 
+     *
      * @return Error message, or null if valid
      */
     public String getErrorMessage() {
@@ -39,7 +39,7 @@ public class ParseResult {
 
     /**
      * Get the position in the expression where the error occurred.
-     * 
+     *
      * @return Error position (0-based index), or null if valid or position unknown
      */
     public Integer getErrorPosition() {
@@ -48,7 +48,7 @@ public class ParseResult {
 
     /**
      * Get the formatted (pretty-printed) expression.
-     * 
+     *
      * @return Formatted expression, or null if invalid
      */
     public String getFormattedExpression() {
@@ -57,7 +57,7 @@ public class ParseResult {
 
     /**
      * Get the original expression that was parsed.
-     * 
+     *
      * @return Original expression string
      */
     public String getOriginalExpression() {
@@ -66,7 +66,7 @@ public class ParseResult {
 
     /**
      * Create a successful parse result.
-     * 
+     *
      * @param originalExpression The original expression
      * @param formattedExpression The formatted expression
      * @return A valid ParseResult
@@ -81,7 +81,7 @@ public class ParseResult {
 
     /**
      * Create a failed parse result with error information.
-     * 
+     *
      * @param originalExpression The original expression
      * @param errorMessage The error message
      * @param errorPosition The position where the error occurred (optional)
@@ -98,7 +98,7 @@ public class ParseResult {
 
     /**
      * Create a failed parse result without position information.
-     * 
+     *
      * @param originalExpression The original expression
      * @param errorMessage The error message
      * @return An invalid ParseResult

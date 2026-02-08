@@ -12,9 +12,9 @@ import java.util.Map;
 
 /**
  * SUBSTRING function - Extracts a substring from a string.
- * 
+ *
  * Usage: SUBSTRING(string, start) or SUBSTRING(string, start, length)
- * 
+ *
  * Examples:
  * - SUBSTRING("hello world", 0) -> "hello world"
  * - SUBSTRING("hello world", 6) -> "world"
@@ -23,7 +23,7 @@ import java.util.Map;
  * - SUBSTRING("hello", 10) -> ""
  * - SUBSTRING("hello", -1) -> "o" (negative index from end)
  * - SUBSTRING(null, 0) -> null
- * 
+ *
  * The start parameter is 0-based. If start is negative, it counts from the end.
  * If length is omitted, extracts to the end of the string.
  * If start or length are out of bounds, they are adjusted to valid ranges.
@@ -63,34 +63,34 @@ public class SubstringFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
         validateArgCountRange(args, 2, 3);
-        
+
         // Convert arguments
         String str = toString(args[0], env);
-        
+
         // Handle null input gracefully
         if (str == null) {
             return AviatorNil.NIL;
         }
-        
+
         Number startNum = toNumber(args[1], env);
         int start = startNum.intValue();
-        
+
         // Handle negative start index (count from end)
         if (start < 0) {
             start = str.length() + start;
         }
-        
+
         // Clamp start to valid range
         start = Math.max(0, Math.min(start, str.length()));
-        
+
         // If length is provided
         if (args.length == 3) {
             Number lengthNum = toNumber(args[2], env);
             int length = lengthNum.intValue();
-            
+
             // Clamp length to valid range
             int end = Math.min(start + length, str.length());
-            
+
             String result = str.substring(start, end);
             return new AviatorString(result);
         } else {

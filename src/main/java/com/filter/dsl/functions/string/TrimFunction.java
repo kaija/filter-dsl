@@ -12,9 +12,9 @@ import java.util.Map;
 
 /**
  * TRIM function - Removes leading and trailing whitespace from a string.
- * 
+ *
  * Usage: TRIM(string)
- * 
+ *
  * Examples:
  * - TRIM("  hello  ") -> "hello"
  * - TRIM("hello") -> "hello"
@@ -22,7 +22,7 @@ import java.util.Map;
  * - TRIM("\t\nhello\n\t") -> "hello"
  * - TRIM("") -> ""
  * - TRIM(null) -> null
- * 
+ *
  * The function removes all leading and trailing whitespace characters including
  * spaces, tabs, newlines, and other Unicode whitespace characters.
  * Null inputs are handled gracefully - returns null if the argument is null.
@@ -49,18 +49,18 @@ public class TrimFunction extends DSLFunction {
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         validateArgCount(new AviatorObject[]{arg1}, 1);
-        
+
         // Convert argument to string
         String str = toString(arg1, env);
-        
+
         // Handle null input gracefully
         if (str == null) {
             return AviatorNil.NIL;
         }
-        
+
         // Trim whitespace
         String result = str.trim();
-        
+
         return new AviatorString(result);
     }
 

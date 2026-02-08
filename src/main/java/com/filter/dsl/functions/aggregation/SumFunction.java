@@ -79,6 +79,7 @@ public class SumFunction extends DSLFunction {
     
     /**
      * Calculate the sum of a collection of numbers.
+     * Supports both direct numbers and Event objects (extracts numeric parameters).
      * 
      * @param collection The collection to sum
      * @return AviatorObject containing the sum
@@ -92,6 +93,27 @@ public class SumFunction extends DSLFunction {
                 continue; // Skip null values
             }
             
+            // Handle Event objects - extract numeric parameters
+            if (item instanceof com.filter.dsl.models.Event) {
+                com.filter.dsl.models.Event event = (com.filter.dsl.models.Event) item;
+                Map<String, Object> params = event.getParameters();
+                
+                if (params != null) {
+                    // Sum all numeric parameters from the event
+                    for (Object paramValue : params.values()) {
+                        if (paramValue instanceof Number) {
+                            Number num = (Number) paramValue;
+                            sum += num.doubleValue();
+                            
+                            if (paramValue instanceof Double || paramValue instanceof Float) {
+                                hasDouble = true;
+                            }
+                        }
+                    }
+                }
+                continue;
+            }
+            
             if (item instanceof Number) {
                 Number num = (Number) item;
                 sum += num.doubleValue();
@@ -102,7 +124,7 @@ public class SumFunction extends DSLFunction {
                 }
             } else {
                 throw new com.filter.dsl.functions.TypeMismatchException(
-                    "SUM expects numeric values, got " + item.getClass().getSimpleName()
+                    "SUM expects numeric values or Event objects, got " + item.getClass().getSimpleName()
                 );
             }
         }
