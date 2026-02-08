@@ -10,9 +10,9 @@
     <packaging>jar</packaging>
 
     <name>Filter DSL</name>
-    <description>A domain-specific language built on AviatorScript for filtering and data processing</description>
-    <url>https://github.com/example/filter-dsl</url>
-    <inceptionYear>2024</inceptionYear>
+    <description>A domain-specific language built on AviatorScript for user segmentation and filtering</description>
+    <url>https://github.com/kaija/filter-dsl</url>
+    <inceptionYear>2026</inceptionYear>
 
     <licenses>
         <license>
@@ -24,23 +24,28 @@
 
     <developers>
         <developer>
-            <id>dev-team</id>
-            <name>Filter DSL Development Team</name>
-            <email>dev@example.com</email>
-            <organization>Example Organization</organization>
-            <organizationUrl>https://example.com</organizationUrl>
+            <id>kaija</id>
+            <name>Kaija Chang</name>
+            <email>kaija.chang@gmail.com</email>
+            <url>https://github.com/kaija</url>
+            <organization>Penrose Organization</organization>
+            <organizationUrl>https://penrose.services</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
         </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/example/filter-dsl.git</connection>
-        <developerConnection>scm:git:ssh://github.com:example/filter-dsl.git</developerConnection>
-        <url>https://github.com/example/filter-dsl/tree/main</url>
+        <connection>scm:git:git://github.com/kaija/filter-dsl.git</connection>
+        <developerConnection>scm:git:ssh://github.com:kaija/filter-dsl.git</developerConnection>
+        <url>https://github.com/kaija/filter-dsl/tree/main</url>
     </scm>
 
     <issueManagement>
         <system>GitHub Issues</system>
-        <url>https://github.com/example/filter-dsl/issues</url>
+        <url>https://github.com/kaija/filter-dsl/issues</url>
     </issueManagement>
 
     <properties>
@@ -173,30 +178,30 @@
         </plugins>
     </build>
 
-    <!-- Distribution Management - Configure for your repository -->
-    <!-- 
-        To publish to Maven Central, you'll need to:
-        1. Sign up for a Sonatype OSSRH account
-        2. Configure GPG signing for artifacts
-        3. Update these URLs to point to Sonatype OSSRH
-        4. Add credentials to ~/.m2/settings.xml
-        
-        For private repositories:
-        1. Update URLs to point to your Nexus/Artifactory instance
-        2. Configure credentials in ~/.m2/settings.xml
-        3. Ensure repository IDs match your settings.xml server IDs
+    <!-- Distribution Management -->
+    <!--
+        GitHub Packages Configuration:
+        To publish to GitHub Packages, configure credentials in ~/.m2/settings.xml:
+
+        <servers>
+            <server>
+                <id>github</id>
+                <username>YOUR_GITHUB_USERNAME</username>
+                <password>YOUR_GITHUB_TOKEN</password>
+            </server>
+        </servers>
+
+        Generate a GitHub Personal Access Token with 'write:packages' scope at:
+        https://github.com/settings/tokens
+
+        Then run: mvn clean deploy
     -->
     <distributionManagement>
         <repository>
-            <id>releases</id>
-            <name>Release Repository</name>
-            <url>https://your-repo-url/releases</url>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/kaija/filter-dsl</url>
         </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>Snapshot Repository</name>
-            <url>https://your-repo-url/snapshots</url>
-        </snapshotRepository>
     </distributionManagement>
 
 </project>
