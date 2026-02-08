@@ -32,6 +32,19 @@ public class Visit {
     
     @JsonProperty("is_first_visit")
     private Boolean isFirstVisit;
+    
+    // Device/Session attributes (moved from Profile - these are session-specific)
+    @JsonProperty("os")
+    private String os;
+    
+    @JsonProperty("browser")
+    private String browser;
+    
+    @JsonProperty("device")
+    private String device;
+    
+    @JsonProperty("screen")
+    private String screen;
 
     // Constructors
     public Visit() {}
@@ -109,6 +122,38 @@ public class Visit {
         this.isFirstVisit = isFirstVisit;
     }
 
+    public String getOs() {
+        return os;
+    }
+
+    public void setOs(String os) {
+        this.os = os;
+    }
+
+    public String getBrowser() {
+        return browser;
+    }
+
+    public void setBrowser(String browser) {
+        this.browser = browser;
+    }
+
+    public String getDevice() {
+        return device;
+    }
+
+    public void setDevice(String device) {
+        this.device = device;
+    }
+
+    public String getScreen() {
+        return screen;
+    }
+
+    public void setScreen(String screen) {
+        this.screen = screen;
+    }
+
     // Builder pattern
     public static Builder builder() {
         return new Builder();
@@ -159,6 +204,26 @@ public class Visit {
 
         public Builder isFirstVisit(Boolean isFirstVisit) {
             visit.isFirstVisit = isFirstVisit;
+            return this;
+        }
+
+        public Builder os(String os) {
+            visit.os = os;
+            return this;
+        }
+
+        public Builder browser(String browser) {
+            visit.browser = browser;
+            return this;
+        }
+
+        public Builder device(String device) {
+            visit.device = device;
+            return this;
+        }
+
+        public Builder screen(String screen) {
+            visit.screen = screen;
             return this;
         }
 

@@ -4,6 +4,7 @@ import com.filter.dsl.functions.FunctionRegistry;
 import com.filter.dsl.functions.data.ProfileFunction;
 import com.filter.dsl.functions.data.EventFunction;
 import com.filter.dsl.functions.data.ParamFunction;
+import com.filter.dsl.functions.data.VisitFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -53,22 +54,25 @@ class DataAccessFunctionsRegistrationTest {
         registry.register(new ProfileFunction());
         registry.register(new EventFunction());
         registry.register(new ParamFunction());
+        registry.register(new VisitFunction());
         
-        assertEquals(3, registry.size());
+        assertEquals(4, registry.size());
         assertTrue(registry.hasFunction("PROFILE"));
         assertTrue(registry.hasFunction("EVENT"));
         assertTrue(registry.hasFunction("PARAM"));
+        assertTrue(registry.hasFunction("VISIT"));
     }
 
     @Test
     void testAutoDiscoveryOfDataAccessFunctions() {
         int count = registry.discoverAndRegister("com.filter.dsl.functions.data");
         
-        // Should discover all 3 data access functions
-        assertEquals(3, count);
+        // Should discover all 4 data access functions
+        assertEquals(4, count);
         assertTrue(registry.hasFunction("PROFILE"));
         assertTrue(registry.hasFunction("EVENT"));
         assertTrue(registry.hasFunction("PARAM"));
+        assertTrue(registry.hasFunction("VISIT"));
     }
 
     @Test
@@ -125,12 +129,14 @@ class DataAccessFunctionsRegistrationTest {
         registry.register(new ProfileFunction());
         registry.register(new EventFunction());
         registry.register(new ParamFunction());
+        registry.register(new VisitFunction());
         
         var names = registry.getFunctionNames();
-        assertEquals(3, names.size());
+        assertEquals(4, names.size());
         assertTrue(names.contains("PROFILE"));
         assertTrue(names.contains("EVENT"));
         assertTrue(names.contains("PARAM"));
+        assertTrue(names.contains("VISIT"));
     }
 
     @Test
@@ -138,8 +144,9 @@ class DataAccessFunctionsRegistrationTest {
         registry.register(new ProfileFunction());
         registry.register(new EventFunction());
         registry.register(new ParamFunction());
+        registry.register(new VisitFunction());
         
-        assertEquals(3, registry.size());
+        assertEquals(4, registry.size());
         
         registry.clear();
         
@@ -147,6 +154,7 @@ class DataAccessFunctionsRegistrationTest {
         assertFalse(registry.hasFunction("PROFILE"));
         assertFalse(registry.hasFunction("EVENT"));
         assertFalse(registry.hasFunction("PARAM"));
+        assertFalse(registry.hasFunction("VISIT"));
     }
 
     @Test

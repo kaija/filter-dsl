@@ -73,10 +73,6 @@ public class TestDataGenerator {
             .language("en")
             .continent("NA")
             .timezone("America/Los_Angeles")
-            .os("Windows")
-            .browser("Chrome")
-            .device("Desktop")
-            .screen("1920x1080")
             .build();
         userData.setProfile(profile);
         

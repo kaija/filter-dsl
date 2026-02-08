@@ -3,7 +3,8 @@ package com.filter.dsl.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * User profile containing demographic and device information.
+ * User profile containing demographic information.
+ * Device attributes (os, browser, device, screen) are now in Visit model.
  */
 public class Profile {
     @JsonProperty("country")
@@ -23,18 +24,6 @@ public class Profile {
     
     @JsonProperty("uuid")
     private String uuid;
-    
-    @JsonProperty("os")
-    private String os;
-    
-    @JsonProperty("browser")
-    private String browser;
-    
-    @JsonProperty("device")
-    private String device;
-    
-    @JsonProperty("screen")
-    private String screen;
 
     // Constructors
     public Profile() {}
@@ -88,38 +77,6 @@ public class Profile {
         this.uuid = uuid;
     }
 
-    public String getOs() {
-        return os;
-    }
-
-    public void setOs(String os) {
-        this.os = os;
-    }
-
-    public String getBrowser() {
-        return browser;
-    }
-
-    public void setBrowser(String browser) {
-        this.browser = browser;
-    }
-
-    public String getDevice() {
-        return device;
-    }
-
-    public void setDevice(String device) {
-        this.device = device;
-    }
-
-    public String getScreen() {
-        return screen;
-    }
-
-    public void setScreen(String screen) {
-        this.screen = screen;
-    }
-
     // Builder pattern
     public static Builder builder() {
         return new Builder();
@@ -155,26 +112,6 @@ public class Profile {
 
         public Builder uuid(String uuid) {
             profile.uuid = uuid;
-            return this;
-        }
-
-        public Builder os(String os) {
-            profile.os = os;
-            return this;
-        }
-
-        public Builder browser(String browser) {
-            profile.browser = browser;
-            return this;
-        }
-
-        public Builder device(String device) {
-            profile.device = device;
-            return this;
-        }
-
-        public Builder screen(String screen) {
-            profile.screen = screen;
             return this;
         }
 

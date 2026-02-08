@@ -44,9 +44,6 @@ class DataContextManagerIntegrationTest {
             .country("USA")
             .city("San Francisco")
             .language("en")
-            .os("macOS")
-            .browser("Chrome")
-            .device("Desktop")
             .build();
         
         testEvent = Event.builder()
@@ -132,7 +129,7 @@ class DataContextManagerIntegrationTest {
         // Call multiple functions with same context
         AviatorObject profileResult = profileFunction.call(
             context,
-            new AviatorString("os")
+            new AviatorString("country")
         );
         
         AviatorObject eventResult = eventFunction.call(
@@ -140,7 +137,7 @@ class DataContextManagerIntegrationTest {
             new AviatorString("event_type")
         );
         
-        assertEquals("macOS", profileResult.getValue(context), "Should return profile OS");
+        assertEquals("USA", profileResult.getValue(context), "Should return profile country");
         assertEquals("action", eventResult.getValue(context), "Should return event type");
     }
     

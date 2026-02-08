@@ -40,10 +40,6 @@ class DataAccessFunctionsTest {
             .continent("North America")
             .timezone("America/New_York")
             .uuid("user-123")
-            .os("Windows")
-            .browser("Chrome")
-            .device("Desktop")
-            .screen("1920x1080")
             .build();
         
         // Create test event
@@ -131,34 +127,6 @@ class DataAccessFunctionsTest {
         ProfileFunction profileFunc = new ProfileFunction();
         AviatorObject result = profileFunc.call(env, new AviatorString("uuid"));
         assertEquals("user-123", result.getValue(env));
-    }
-
-    @Test
-    void testProfileGetOs() {
-        ProfileFunction profileFunc = new ProfileFunction();
-        AviatorObject result = profileFunc.call(env, new AviatorString("os"));
-        assertEquals("Windows", result.getValue(env));
-    }
-
-    @Test
-    void testProfileGetBrowser() {
-        ProfileFunction profileFunc = new ProfileFunction();
-        AviatorObject result = profileFunc.call(env, new AviatorString("browser"));
-        assertEquals("Chrome", result.getValue(env));
-    }
-
-    @Test
-    void testProfileGetDevice() {
-        ProfileFunction profileFunc = new ProfileFunction();
-        AviatorObject result = profileFunc.call(env, new AviatorString("device"));
-        assertEquals("Desktop", result.getValue(env));
-    }
-
-    @Test
-    void testProfileGetScreen() {
-        ProfileFunction profileFunc = new ProfileFunction();
-        AviatorObject result = profileFunc.call(env, new AviatorString("screen"));
-        assertEquals("1920x1080", result.getValue(env));
     }
 
     @Test
@@ -629,7 +597,7 @@ class DataAccessFunctionsTest {
         
         // Verify profile access
         assertNotNull(profileFunc.call(env, new AviatorString("country")).getValue(env));
-        assertNotNull(profileFunc.call(env, new AviatorString("browser")).getValue(env));
+        assertNotNull(profileFunc.call(env, new AviatorString("city")).getValue(env));
         
         // Verify event access
         assertNotNull(eventFunc.call(env, new AviatorString("event_name")).getValue(env));

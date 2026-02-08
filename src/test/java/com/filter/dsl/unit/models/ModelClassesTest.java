@@ -35,10 +35,6 @@ class ModelClassesTest {
                 .language("en")
                 .continent("North America")
                 .timezone("America/New_York")
-                .os("Windows")
-                .browser("Chrome")
-                .device("Desktop")
-                .screen("1920x1080")
                 .build();
 
         assertEquals("user-123", profile.getUuid());
@@ -47,10 +43,6 @@ class ModelClassesTest {
         assertEquals("en", profile.getLanguage());
         assertEquals("North America", profile.getContinent());
         assertEquals("America/New_York", profile.getTimezone());
-        assertEquals("Windows", profile.getOs());
-        assertEquals("Chrome", profile.getBrowser());
-        assertEquals("Desktop", profile.getDevice());
-        assertEquals("1920x1080", profile.getScreen());
     }
 
     @Test

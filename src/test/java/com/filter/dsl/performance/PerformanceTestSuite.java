@@ -365,6 +365,8 @@ public class PerformanceTestSuite {
         // Measure execution times
         List<Long> executionTimes = new ArrayList<>();
         long totalCpuTime = 0;
+        Set<String> uniqueErrors = new HashSet<>();
+        int errorCount = 0;
         
         System.out.print("  Running " + iterations + " iterations...");
         long startTime = System.nanoTime();
@@ -377,12 +379,18 @@ public class PerformanceTestSuite {
             executionTimes.add(iterEnd - iterStart);
             
             if (!result.isSuccess()) {
-                System.err.println("\n  ERROR: " + result.getErrorMessage());
+                errorCount++;
+                uniqueErrors.add(result.getErrorMessage());
             }
         }
         
         long endTime = System.nanoTime();
         System.out.println(" done");
+        
+        // Print error summary if any
+        if (errorCount > 0) {
+            System.err.println("  Note: " + errorCount + " evaluation errors occurred (" + uniqueErrors.size() + " unique)");
+        }
         
         // Measure memory after
         System.gc();

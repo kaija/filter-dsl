@@ -283,6 +283,9 @@ public class ComprehensiveFunctionBenchmark {
         List<Long> times = new ArrayList<>();
         long start = System.nanoTime();
         
+        Set<String> uniqueErrors = new HashSet<>();
+        int errorCount = 0;
+        
         for (int i = 0; i < ITERATIONS; i++) {
             long iterStart = System.nanoTime();
             EvaluationResult result = dsl.evaluate(expression, userData);
@@ -290,11 +293,17 @@ public class ComprehensiveFunctionBenchmark {
             times.add(iterEnd - iterStart);
             
             if (!result.isSuccess()) {
-                System.err.println("ERROR in " + name + ": " + result.getErrorMessage());
+                errorCount++;
+                uniqueErrors.add(result.getErrorMessage());
             }
         }
         
         long end = System.nanoTime();
+        
+        // Print unique errors summary (if any)
+        if (errorCount > 0) {
+            System.err.println("  Note: " + errorCount + " evaluation errors occurred (" + uniqueErrors.size() + " unique)");
+        }
         
         // Memory measurement
         System.gc();

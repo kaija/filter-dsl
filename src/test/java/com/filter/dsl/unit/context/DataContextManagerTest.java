@@ -41,9 +41,6 @@ class DataContextManagerTest {
             .country("USA")
             .city("San Francisco")
             .language("en")
-            .os("macOS")
-            .browser("Chrome")
-            .device("Desktop")
             .build();
         
         // Create test visit
