@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2024-02-XX
+
+### Added
+- **Simplified Aggregation Syntax**: All aggregation functions (COUNT, SUM, AVG, MIN, MAX, UNIQUE) now support implicit event filtering
+  - 0-argument form: Operates on all events (e.g., `COUNT()`)
+  - 1-argument string form: Filters events with condition (e.g., `COUNT("EQ(EVENT(\"eventName\"), \"purchase\")")`)
+  - Backward compatible with existing 1-2 argument forms
+  - Reduces expression length by 25-70%
+  - More intuitive and readable syntax
+- Helper methods in `DSLFunction` base class:
+  - `getUserDataEvents()` - Get events from userData context
+  - `filterCollection()` - Filter collection with string expression
+  - `toCollection()` - Convert various types to collections
+  - `parseTimestamp()` - Parse ISO 8601 timestamps
+
+### Changed
+- Updated all aggregation functions to support 0-2 arguments with flexible parameter types
+- Enhanced `DSLFunction` base class with reusable helper methods for common operations
+
+### Documentation
+- Updated all documentation to showcase new simplified syntax
+- Added migration examples showing old vs new syntax
+- Updated `README.md` with v1.1.0 feature highlights
+- Updated `FUNCTION_REFERENCE.md` with new aggregation function signatures
+- Updated `QUICK_REFERENCE.md` with simplified examples
+- Updated `USE_CASE_EXAMPLES.md` with new syntax patterns
+- Updated `API.md` and `PERFORMANCE_GUIDE.md` with new examples
+
+### Backward Compatibility
+- **100% backward compatible** - all existing expressions continue to work
+- Old syntax with explicit WHERE and userData.events still fully supported
+- No breaking changes to API or function signatures
+
 ## [1.0.0] - 2024-01-XX
 
 ### Added
@@ -87,14 +120,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
+- **1.1.0** - Simplified aggregation syntax with implicit event filtering
 - **1.0.0** - Initial release with complete DSL implementation
 
 ## Upgrade Guide
+
+### Migrating to 1.1.0 from 1.0.0
+
+No migration required! Version 1.1.0 is 100% backward compatible. However, you can optionally update your expressions to use the new simplified syntax:
+
+**Old Syntax (Still Works)**:
+```java
+"COUNT(WHERE(userData.events, \"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\"))"
+```
+
+**New Simplified Syntax (Recommended)**:
+```java
+"COUNT(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\")"
+```
+
+**Benefits of New Syntax**:
+- 25-70% shorter expressions
+- Fewer nested parentheses
+- More intuitive and readable
+- Same performance characteristics
 
 ### Migrating to 1.0.0
 This is the initial release. No migration needed.
 
 ## Breaking Changes
+
+### 1.1.0
+None - fully backward compatible.
 
 ### 1.0.0
 None - initial release.

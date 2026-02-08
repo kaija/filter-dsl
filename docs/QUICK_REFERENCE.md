@@ -44,42 +44,39 @@ List<EvaluationResult> results = DSL.evaluateBatch(expression, users);
 "EQ(PROFILE(\"country\"), \"US\")"
 
 // Users with > N events
-"GT(COUNT(userData.events), 10)"
+"GT(COUNT(), 10)"
 
 // Users with recent activity
-"GT(COUNT(WHERE(userData.events, IN_RECENT_DAYS(30))), 0)"
+"GT(COUNT(\"IN_RECENT_DAYS(30)\"), 0)"
 
 // High-value users
-"GT(SUM(PARAM(\"amount\")), 1000)"
+"GT(SUM(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\"), 1000)"
 ```
 
-### Event Filtering
+### Aggregations (Simplified Syntax)
 
 ```java
-// Purchase events only
-"WHERE(userData.events, \"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\")"
+// Count all events
+"COUNT()"
 
-// Events in time range
-"WHERE(userData.events, \"AND(FROM(30, \\\"D\\\"), TO(0, \\\"D\\\"))\")"
+// Count filtered events
+"COUNT(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\")"
 
-// High-value purchases
-"WHERE(userData.events, \"AND(EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\"), GT(PARAM(\\\"amount\\\"), 100))\")"
-```
+// Sum all amounts
+"SUM()"
 
-### Aggregations
-
-```java
-// Count events
-"COUNT(userData.events)"
-
-// Sum amounts
-"SUM(PARAM(\"amount\"))"
+// Sum purchase amounts
+"SUM(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\")"
 
 // Average value
-"AVG(PARAM(\"amount\"))"
+"AVG(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\")"
 
 // Unique event types
-"COUNT(UNIQUE(BY(EVENT(\"eventName\"))))"
+"COUNT(UNIQUE(\"EQ(EVENT(\\\"eventType\\\"), \\\"action\\\")\"))"
+
+// Min/Max values
+"MIN(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\")"
+"MAX(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\")"
 ```
 
 ### Date/Time

@@ -2,33 +2,39 @@
 
 A domain-specific language (DSL) built on AviatorScript for user segmentation and filtering. This library enables marketers and analysts to create complex queries on user profile data, visits, and events to perform segmentation, filtering, and computed property creation.
 
+## ✨ What's New in v1.1.0
+
+**Simplified Aggregation Syntax** - Aggregation functions now support implicit event filtering!
+
+```java
+// Old syntax (still supported)
+"COUNT(WHERE(userData.events, \"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\"))"
+
+// New simplified syntax (recommended)
+"COUNT(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\")"
+
+// Even simpler - count all events
+"COUNT()"
+```
+
+**Benefits:**
+- 25-70% shorter expressions
+- More intuitive and readable
+- Fewer nested parentheses
+- Fully backward compatible
+
+See [Migration Guide](#migration-to-simplified-syntax) below for details.
+
 ## Features
 
 - **UPPERCASE Function Syntax**: Clear, readable DSL with consistent naming
+- **Simplified Aggregation Syntax**: Implicit event filtering for cleaner expressions (NEW!)
 - **String-Based Filtering**: IF and WHERE functions accept string expressions for proper lazy evaluation
 - **Extensible Architecture**: Easy to add custom functions without modifying core code
 - **Type-Safe**: Built-in type checking and validation
-- **Comprehensive Function Library**: 50+ built-in functions for logical operations, aggregations, math, dates, strings, and more
+- **Comprehensive Function Library**: 65+ built-in functions for logical operations, aggregations, math, dates, strings, and more
 - **Property-Based Testing**: Thoroughly tested with both unit and property-based tests
 - **Thread-Safe**: Safe for concurrent use in multi-threaded applications
-
-## Important Notes
-
-### IF/WHERE Function Syntax
-
-The `IF` and `WHERE` functions accept **STRING expressions** instead of boolean expressions directly. This is due to AviatorScript's eager evaluation behavior, which would evaluate the condition before filtering.
-
-**Old syntax (incorrect):**
-```java
-WHERE(userData.events, EQ(EVENT("eventName"), "purchase"))
-```
-
-**New syntax (correct):**
-```java
-WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")")
-```
-
-Note that quotes inside the string expression must be escaped with backslashes (`\"`). This allows the DSL to properly evaluate the condition in the context of each item being filtered.
 
 ## Installation
 
@@ -82,8 +88,8 @@ UserData userData = UserData.builder()
         .build())
     .build();
 
-// Evaluate a DSL expression
-String expression = "GT(COUNT(WHERE(userData.events, \"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\")), 5)";
+// Evaluate a DSL expression (NEW simplified syntax!)
+String expression = "GT(COUNT(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\"), 5)";
 EvaluationResult result = DSL.evaluate(expression, userData);
 
 if (result.isSuccess()) {
@@ -108,12 +114,24 @@ if (result.isSuccess()) {
 - `NEQ(a, b)` - Not equal
 
 ### Aggregation Functions
-- `COUNT(collection)` - Count items
-- `SUM(collection)` - Sum numeric values
-- `AVG(collection)` - Average of numeric values
-- `MIN(collection)` - Minimum value
-- `MAX(collection)` - Maximum value
-- `UNIQUE(collection)` - Distinct values only
+
+**NEW: Simplified syntax with implicit event filtering!**
+
+- `COUNT()` - Count all events from userData.events
+- `COUNT("condition")` - Count events matching condition
+- `COUNT(collection)` - Count items in collection (legacy)
+- `SUM()` - Sum all event parameters
+- `SUM("condition")` - Sum events matching condition
+- `AVG()` - Average of all event parameters
+- `AVG("condition")` - Average of events matching condition
+- `MIN()` - Minimum from all events
+- `MIN("condition")` - Minimum from events matching condition
+- `MAX()` - Maximum from all events
+- `MAX("condition")` - Maximum from events matching condition
+- `UNIQUE()` - Distinct events
+- `UNIQUE("condition")` - Distinct events matching condition
+
+**Note:** All aggregation functions now default to operating on `userData.events` when no collection is provided. This eliminates the need for explicit `WHERE(userData.events, ...)` wrappers in most cases.
 
 ### Mathematical Functions
 - Basic: `ADD`, `SUBTRACT`, `MULTIPLY`, `DIVIDE`, `MOD`
@@ -152,6 +170,13 @@ if (result.isSuccess()) {
 ## Example Use Cases
 
 ### Users with more than 5 purchases in the past year
+
+**New simplified syntax (recommended):**
+```java
+String expression = "GT(COUNT(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\"), 5)";
+```
+
+**Old syntax (still supported):**
 ```java
 String expression = """
     GT(
@@ -166,9 +191,26 @@ String expression = """
 """;
 ```
 
-**Note:** The WHERE function now accepts a STRING expression instead of a boolean expression. This is due to AviatorScript's eager evaluation behavior. Quotes inside the string must be escaped with backslashes.
-
 ### Calculate active days ratio in recent 30 days
+
+**New simplified syntax (recommended):**
+```java
+String expression = """
+    DIVIDE(
+        COUNT(
+            UNIQUE(
+                "AND(
+                    EQ(EVENT(\\"eventType\\"), \\"action\\"),
+                    IN_RECENT_DAYS(30)
+                )"
+            )
+        ),
+        30
+    )
+""";
+```
+
+**Old syntax (still supported):**
 ```java
 String expression = """
     DIVIDE(
@@ -188,9 +230,19 @@ String expression = """
 """;
 ```
 
-**Note:** The WHERE function accepts a STRING expression. Quotes inside must be escaped with backslashes.
-
 ### Segment users by purchase amount
+
+**New simplified syntax (recommended):**
+```java
+String expression = """
+    BUCKET(
+        SUM("EQ(EVENT(\\"eventName\\"), \\"purchase\\")"),
+        [[0, 10, "Low"], [10, 100, "Medium"], [100, 500, "High"], [500, 5000, "VIP"]]
+    )
+""";
+```
+
+**Old syntax (still supported):**
 ```java
 String expression = """
     BUCKET(
@@ -205,7 +257,55 @@ String expression = """
 """;
 ```
 
-**Note:** The WHERE function accepts a STRING expression with escaped quotes.
+## Migration to Simplified Syntax
+
+The new simplified syntax is **fully backward compatible**. Your existing code will continue to work without any changes.
+
+### Key Changes
+
+1. **Aggregation functions now accept 0-2 arguments** (previously 1 argument)
+   - 0 arguments: operates on all `userData.events`
+   - 1 string argument: filters `userData.events` with condition
+   - 1 collection argument: operates on provided collection (legacy)
+   - 2 arguments: filters provided collection with condition (legacy)
+
+2. **No need for explicit `WHERE(userData.events, ...)` wrapper**
+   - Old: `COUNT(WHERE(userData.events, "condition"))`
+   - New: `COUNT("condition")`
+
+3. **Expression length reduced by 25-70%**
+   - Fewer nested parentheses
+   - Less quote escaping
+   - More readable
+
+### Migration Examples
+
+```java
+// Count all events
+Old: COUNT(userData.events)
+New: COUNT()
+
+// Count with filter
+Old: COUNT(WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")"))
+New: COUNT("EQ(EVENT(\"eventName\"), \"purchase\")")
+
+// Sum with filter
+Old: SUM(WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")"))
+New: SUM("EQ(EVENT(\"eventName\"), \"purchase\")")
+
+// Complex nested expression
+Old: DIVIDE(COUNT(UNIQUE(WHERE(userData.events, "AND(...)"))), 30)
+New: DIVIDE(COUNT(UNIQUE("AND(...)")), 30)
+```
+
+### When to Use Old Syntax
+
+The old syntax is still useful when:
+- Filtering a custom collection (not `userData.events`)
+- Working with existing code that you don't want to update
+- Team preference for explicit collection specification
+
+Both syntaxes are equally performant and fully supported.
 
 ## Extending the DSL
 
@@ -309,7 +409,11 @@ This project follows [Semantic Versioning](https://semver.org/):
 - **MINOR** version for backwards-compatible functionality additions
 - **PATCH** version for backwards-compatible bug fixes
 
-Current version: **1.0.0**
+Current version: **1.1.0**
+
+### Version History
+- **1.1.0** (2024-02) - Added simplified aggregation syntax with implicit event filtering
+- **1.0.0** (2024-01) - Initial release
 
 ## License
 

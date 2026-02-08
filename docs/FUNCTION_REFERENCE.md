@@ -232,57 +232,106 @@ NEQ("hello", "world")                              → true
 
 ### COUNT
 
-Returns the number of items in a collection.
+Returns the number of items in a collection. **NEW in v1.1.0**: Supports simplified syntax with implicit event filtering.
 
-**Syntax:** `COUNT(collection)`
+**Syntax:** 
+- `COUNT()` - Count all events (uses userData.events implicitly)
+- `COUNT(filterExpression)` - Count events matching filter (string expression)
+- `COUNT(collection)` - Count items in collection (backward compatible)
 
 **Parameters:**
-- `collection` (Collection) - Collection to count
+- No parameters - Counts all events in userData.events
+- `filterExpression` (String) - Filter condition as string expression
+- `collection` (Collection) - Collection to count (backward compatible)
 
 **Returns:** Number - count of items (0 for empty collections)
 
 **Examples:**
 ```
+// New simplified syntax (v1.1.0+)
+COUNT()                                            → 42 (all events)
+COUNT("EQ(EVENT(\"eventName\"), \"purchase\")")   → 5 (filtered events)
+COUNT("IN_RECENT_DAYS(30)")                        → 15 (recent events)
+
+// Old syntax (still supported)
 COUNT(userData.events)                             → 42
 COUNT(WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")"))  → 5
 COUNT([])                                          → 0
 ```
 
+**Notes:**
+- The simplified syntax is recommended for cleaner, more readable expressions
+- Filter expressions are evaluated in the context of each event
+- Fully backward compatible with existing expressions
+
 ### SUM
 
-Returns the sum of numeric values in a collection.
+Returns the sum of numeric values in a collection. **NEW in v1.1.0**: Supports simplified syntax with implicit event filtering.
 
-**Syntax:** `SUM(collection)`
+**Syntax:** 
+- `SUM()` - Sum all events (uses userData.events implicitly)
+- `SUM(filterExpression)` - Sum events matching filter (string expression)
+- `SUM(collection)` - Sum items in collection (backward compatible)
 
 **Parameters:**
-- `collection` (Collection<Number>) - Collection of numbers
+- No parameters - Sums all events in userData.events
+- `filterExpression` (String) - Filter condition as string expression
+- `collection` (Collection<Number>) - Collection of numbers (backward compatible)
 
 **Returns:** Number - sum of all values (0 for empty collections)
 
 **Examples:**
 ```
+// New simplified syntax (v1.1.0+)
+SUM()                                              → 1234.56 (all events)
+SUM("EQ(EVENT(\"eventName\"), \"purchase\")")     → 999.99 (purchase amounts)
+SUM("IN_RECENT_DAYS(30)")                          → 450.00 (recent amounts)
+
+// Old syntax (still supported)
 SUM([1, 2, 3, 4, 5])                              → 15
 SUM(PARAM("amount"))                               → 1234.56
 SUM([])                                            → 0
 ```
 
+**Notes:**
+- When using simplified syntax, SUM operates on event values or parameters
+- Filter expressions are evaluated in the context of each event
+- Fully backward compatible with existing expressions
+
 ### AVG
 
-Returns the average of numeric values in a collection.
+Returns the average of numeric values in a collection. **NEW in v1.1.0**: Supports simplified syntax with implicit event filtering.
 
-**Syntax:** `AVG(collection)`
+**Syntax:** 
+- `AVG()` - Average all events (uses userData.events implicitly)
+- `AVG(filterExpression)` - Average events matching filter (string expression)
+- `AVG(collection)` - Average items in collection (backward compatible)
 
 **Parameters:**
-- `collection` (Collection<Number>) - Collection of numbers
+- No parameters - Averages all events in userData.events
+- `filterExpression` (String) - Filter condition as string expression
+- `collection` (Collection<Number>) - Collection of numbers (backward compatible)
 
 **Returns:** Number - average value (null for empty collections)
 
 **Examples:**
 ```
+// New simplified syntax (v1.1.0+)
+AVG()                                              → 45.67 (all events)
+AVG("EQ(EVENT(\"eventName\"), \"purchase\")")     → 99.99 (purchase average)
+AVG("IN_RECENT_DAYS(7)")                           → 52.30 (recent average)
+
+// Old syntax (still supported)
 AVG([1, 2, 3, 4, 5])                              → 3.0
 AVG([10, 20, 30])                                  → 20.0
 AVG([])                                            → null
 ```
+
+**Notes:**
+- When using simplified syntax, AVG operates on event values or parameters
+- Filter expressions are evaluated in the context of each event
+- Returns null for empty collections
+- Fully backward compatible with existing expressions
 
 ### MIN
 

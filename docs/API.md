@@ -78,8 +78,8 @@ UserData userData = UserData.builder()
         .build())
     .build();
 
-// Evaluate expression
-String expression = "GT(COUNT(WHERE(userData.events, \"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\")), 5)";
+// Evaluate expression (simplified syntax)
+String expression = "GT(COUNT(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\"), 5)";
 EvaluationResult result = DSL.evaluate(expression, userData);
 
 // Check result
@@ -97,7 +97,7 @@ Evaluate the same expression for multiple users efficiently:
 
 ```java
 List<UserData> users = loadUsers(); // Your method to load users
-String expression = "GT(SUM(PARAM(\"amount\")), 1000)";
+String expression = "GT(SUM(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\"), 1000)";
 
 List<EvaluationResult> results = DSL.evaluateBatch(expression, users);
 

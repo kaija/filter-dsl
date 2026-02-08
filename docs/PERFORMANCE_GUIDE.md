@@ -66,14 +66,14 @@ Typical performance on modern hardware (Intel i7, 16GB RAM):
 
 **Simple Expression:**
 ```
-EQ(PROFILE("country"), "US")
+COUNT("EQ(EVENT(\"eventName\"), \"purchase\")")
 ```
 
 **Complex Expression:**
 ```
 AND(
-  GT(COUNT(WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")")), 5),
-  GT(SUM(PARAM("amount")), 1000),
+  GT(COUNT("EQ(EVENT(\"eventName\"), \"purchase\")"), 5),
+  GT(SUM("EQ(EVENT(\"eventName\"), \"purchase\")"), 1000),
   IN_RECENT_DAYS(30)
 )
 ```
@@ -618,7 +618,11 @@ public class DSLCacheWarmer implements ApplicationListener<ApplicationReadyEvent
     public void onApplicationEvent(ApplicationReadyEvent event) {
         logger.info("Warming DSL expression cache...");
         
-        List<String> expressions = loadCommonExpressions();
+        List<String> expressions = Arrays.asList(
+            "EQ(PROFILE(\"country\"), \"US\")",
+            "GT(COUNT(), 10)",
+            "GT(SUM(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\"), 1000)"
+        );
         UserData sampleUser = createSampleUser();
         
         for (String expr : expressions) {

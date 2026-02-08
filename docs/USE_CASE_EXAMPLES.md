@@ -20,7 +20,16 @@ This document provides comprehensive examples of DSL expressions for common user
 
 **Use Case**: Identify users who have made more than a specific number of purchases (e.g., 5) in the past 365 days.
 
-**DSL Expression**:
+**DSL Expression (Simplified Syntax)**:
+```
+GT(COUNT("EQ(EVENT(\"eventName\"), \"purchase\")"), 5)
+```
+
+**How it works**:
+1. `COUNT("EQ(EVENT(\"eventName\"), \"purchase\")")` - Counts purchase events using implicit filtering
+2. `GT(..., 5)` - Checks if the count is greater than 5
+
+**Old Syntax (Still Supported)**:
 ```
 GT(
     COUNT(
@@ -32,11 +41,6 @@ GT(
     5
 )
 ```
-
-**How it works**:
-1. `WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")")` - Filters all events to only purchase events (note: WHERE accepts a string expression)
-2. `COUNT(...)` - Counts the number of purchase events
-3. `GT(..., 5)` - Checks if the count is greater than 5
 
 **Example Scenarios**:
 - User with 7 purchases → Returns `true`
@@ -54,7 +58,16 @@ GT(
 
 **Use Case**: Identify users whose total purchase amount exceeds a threshold (e.g., $1000).
 
-**DSL Expression**:
+**DSL Expression (Simplified Syntax)**:
+```
+GT(SUM("EQ(EVENT(\"eventName\"), \"purchase\")"), 1000)
+```
+
+**How it works**:
+1. `SUM("EQ(EVENT(\"eventName\"), \"purchase\")")` - Sums amounts from purchase events using implicit filtering
+2. `GT(..., 1000)` - Checks if the total exceeds $1000
+
+**Old Syntax (Still Supported)**:
 ```
 GT(
     SUM(
@@ -66,11 +79,6 @@ GT(
     1000
 )
 ```
-
-**How it works**:
-1. `WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")")` - Filters to purchase events (note: WHERE accepts a string expression)
-2. `SUM(...)` - Sums the amounts from all purchase events (assumes events have an "amount" field)
-3. `GT(..., 1000)` - Checks if the total exceeds $1000
 
 **Example Scenarios**:
 - User with purchases totaling $1500 → Returns `true`
@@ -87,7 +95,24 @@ GT(
 
 **Use Case**: Categorize users into segments (e.g., "low", "medium", "high", "vip") based on their total purchase amount.
 
-**DSL Expression**:
+**DSL Expression (Simplified Syntax)**:
+```
+BUCKET(
+    SUM("EQ(EVENT(\"eventName\"), \"purchase\")"), 
+    [
+        [0, 100, "low"], 
+        [100, 500, "medium"], 
+        [500, 2000, "high"], 
+        [2000, 10000, "vip"]
+    ]
+)
+```
+
+**How it works**:
+1. `SUM("EQ(EVENT(\"eventName\"), \"purchase\")")` - Calculates total purchase amount using implicit filtering
+2. `BUCKET(..., ranges)` - Assigns the user to a segment based on which range their total falls into
+
+**Old Syntax (Still Supported)**:
 ```
 BUCKET(
     SUM(
@@ -104,10 +129,6 @@ BUCKET(
     ]
 )
 ```
-
-**How it works**:
-1. `SUM(WHERE(...))` - Calculates total purchase amount
-2. `BUCKET(..., ranges)` - Assigns the user to a segment based on which range their total falls into
 
 **Bucket Ranges**:
 - `[0, 100, "low"]` - $0 to $100 → "low" segment
@@ -132,7 +153,20 @@ BUCKET(
 
 **Use Case**: Calculate the ratio of active days to total days in a period (e.g., active days / 30 days).
 
-**DSL Expression**:
+**DSL Expression (Simplified Syntax)**:
+```
+DIVIDE(
+    COUNT(UNIQUE("EQ(EVENT(\"eventType\"), \"action\")")), 
+    30
+)
+```
+
+**How it works**:
+1. `UNIQUE("EQ(EVENT(\"eventType\"), \"action\")")` - Gets unique action events using implicit filtering
+2. `COUNT(...)` - Counts the number of unique active days
+3. `DIVIDE(..., 30)` - Calculates the ratio (active days / 30)
+
+**Old Syntax (Still Supported)**:
 ```
 DIVIDE(
     COUNT(
@@ -146,12 +180,6 @@ DIVIDE(
     30
 )
 ```
-
-**How it works**:
-1. `WHERE(userData.events, "EQ(EVENT(\"eventType\"), \"action\")")` - Filters to action events (note: WHERE accepts a string expression)
-2. `UNIQUE(...)` - Gets unique events (removes duplicates from same day)
-3. `COUNT(...)` - Counts the number of unique active days
-4. `DIVIDE(..., 30)` - Calculates the ratio (active days / 30)
 
 **Example Scenarios**:
 - User active on 15 unique days → Returns `0.5` (50% active)
@@ -169,7 +197,16 @@ DIVIDE(
 
 **Use Case**: Identify users who came from a specific marketing campaign (e.g., "summer_sale").
 
-**DSL Expression**:
+**DSL Expression (Simplified Syntax)**:
+```
+GT(COUNT("EQ(PARAM(\"utm_campaign\"), \"summer_sale\")"), 0)
+```
+
+**How it works**:
+1. `COUNT("EQ(PARAM(\"utm_campaign\"), \"summer_sale\")")` - Counts events with the specified UTM campaign using implicit filtering
+2. `GT(..., 0)` - Returns true if any events match
+
+**Old Syntax (Still Supported)**:
 ```
 GT(
     COUNT(
@@ -181,11 +218,6 @@ GT(
     0
 )
 ```
-
-**How it works**:
-1. `WHERE(userData.events, "EQ(PARAM(\"utm_campaign\"), \"summer_sale\")")` - Filters events with the specified UTM campaign (note: WHERE accepts a string expression)
-2. `COUNT(...)` - Counts matching events
-3. `GT(..., 0)` - Returns true if any events match
 
 **Example Scenarios**:
 - User with events from "summer_sale" campaign → Returns `true`
@@ -227,7 +259,21 @@ IS_RECURRING("login", 3, 90)
 
 **Use Case**: Identify users who have events on specific days of the week (e.g., weekends).
 
-**DSL Expression**:
+**DSL Expression (Simplified Syntax)**:
+```
+GT(
+    COUNT("OR(EQ(WEEKDAY(EVENT(\"timestamp\")), 6), EQ(WEEKDAY(EVENT(\"timestamp\")), 7))"), 
+    0
+)
+```
+
+**How it works**:
+1. `WEEKDAY(EVENT("timestamp"))` - Gets the day of week (1=Monday, 7=Sunday)
+2. `OR(EQ(..., 6), EQ(..., 7))` - Checks if it's Saturday (6) or Sunday (7)
+3. `COUNT(...)` - Counts weekend events using implicit filtering
+4. `GT(..., 0)` - Returns true if any weekend events exist
+
+**Old Syntax (Still Supported)**:
 ```
 GT(
     COUNT(
@@ -242,13 +288,6 @@ GT(
     0
 )
 ```
-
-**How it works**:
-1. `WEEKDAY(EVENT("timestamp"))` - Gets the day of week (1=Monday, 7=Sunday)
-2. `OR(EQ(..., 6), EQ(..., 7))` - Checks if it's Saturday (6) or Sunday (7)
-3. `WHERE(...)` - Filters events to only weekend events (note: WHERE accepts a string expression)
-4. `COUNT(...)` - Counts weekend events
-5. `GT(..., 0)` - Returns true if any weekend events exist
 
 **Weekday Values**:
 - 1 = Monday
@@ -274,7 +313,28 @@ GT(
 
 **Use Case**: Convert values between units (e.g., cents to dollars) before performing calculations or bucketing.
 
-**DSL Expression**:
+**DSL Expression (Simplified Syntax)**:
+```
+BUCKET(
+    CONVERT_UNIT(
+        SUM("EQ(EVENT(\"eventName\"), \"purchase\")"), 
+        "cents", 
+        "dollars"
+    ), 
+    [
+        [0, 100, "low"], 
+        [100, 500, "medium"], 
+        [500, 10000, "high"]
+    ]
+)
+```
+
+**How it works**:
+1. `SUM("EQ(EVENT(\"eventName\"), \"purchase\")")` - Calculates total purchase amount in cents using implicit filtering
+2. `CONVERT_UNIT(..., "cents", "dollars")` - Converts from cents to dollars
+3. `BUCKET(...)` - Assigns to segment based on dollar amount
+
+**Old Syntax (Still Supported)**:
 ```
 BUCKET(
     CONVERT_UNIT(
@@ -294,11 +354,6 @@ BUCKET(
     ]
 )
 ```
-
-**How it works**:
-1. `SUM(WHERE(...))` - Calculates total purchase amount in cents (note: WHERE accepts a string expression)
-2. `CONVERT_UNIT(..., "cents", "dollars")` - Converts from cents to dollars
-3. `BUCKET(...)` - Assigns to segment based on dollar amount
 
 **Supported Unit Categories**:
 
@@ -334,7 +389,27 @@ BUCKET(
 - Active in past 30 days
 - From US or UK
 
-**DSL Expression**:
+**DSL Expression (Simplified Syntax)**:
+```
+AND(
+    GT(COUNT("EQ(EVENT(\"eventName\"), \"purchase\")"), 10), 
+    GT(SUM("EQ(EVENT(\"eventName\"), \"purchase\")"), 2000), 
+    GT(COUNT("EQ(EVENT(\"eventType\"), \"action\")"), 0), 
+    OR(
+        EQ(PROFILE("country"), "US"), 
+        EQ(PROFILE("country"), "UK")
+    )
+)
+```
+
+**How it works**:
+1. First condition: Checks purchase count > 10 using implicit filtering
+2. Second condition: Checks total purchase amount > $2000 using implicit filtering
+3. Third condition: Checks for recent activity using implicit filtering
+4. Fourth condition: Checks if user is from US or UK
+5. `AND(...)` - All conditions must be true
+
+**Old Syntax (Still Supported)**:
 ```
 AND(
     GT(
@@ -370,13 +445,6 @@ AND(
     )
 )
 ```
-
-**How it works**:
-1. First condition: Checks purchase count > 10 (note: WHERE accepts a string expression)
-2. Second condition: Checks total purchase amount > $2000 (note: WHERE accepts a string expression)
-3. Third condition: Checks for recent activity (note: WHERE accepts a string expression)
-4. Fourth condition: Checks if user is from US or UK
-5. `AND(...)` - All conditions must be true
 
 **Example Scenarios**:
 - User meeting all criteria → Returns `true`
