@@ -265,4 +265,159 @@ public abstract class DSLFunction extends AbstractFunction {
     protected Object getValue(AviatorObject obj, Map<String, Object> env) {
         return obj == null ? null : obj.getValue(env);
     }
+
+    // ========== New Helper Methods for Simplified DSL ==========
+
+    /**
+     * Get events from userData in the evaluation context.
+     * Returns an empty list if userData or events are not available.
+     *
+     * @param env The evaluation environment
+     * @return Collection of events from userData
+     */
+    protected Collection<?> getUserDataEvents(Map<String, Object> env) {
+        Object userData = env.get("userData");
+        if (userData == null) {
+            return java.util.Collections.emptyList();
+        }
+
+        try {
+            // Use reflection to get events from UserData
+            java.lang.reflect.Method getEventsMethod = userData.getClass().getMethod("getEvents");
+            Object events = getEventsMethod.invoke(userData);
+            if (events instanceof Collection) {
+                return (Collection<?>) events;
+            }
+        } catch (Exception e) {
+            // If we can't get events, return empty list
+        }
+
+        return java.util.Collections.emptyList();
+    }
+
+    /**
+     * Filter a collection based on a condition expression.
+     * The condition is evaluated for each item with that item set as the current context.
+     *
+     * @param collection The collection to filter
+     * @param conditionExpr The condition expression as a string
+     * @param env The evaluation environment
+     * @return Filtered collection
+     */
+    protected Collection<?> filterCollection(Collection<?> collection, String conditionExpr, Map<String, Object> env) {
+        if (collection == null || collection.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+
+        // Get the aviator instance from the environment
+        Object aviatorObj = env.get("__aviator__");
+        if (aviatorObj == null || !(aviatorObj instanceof com.googlecode.aviator.AviatorEvaluatorInstance)) {
+            throw new RuntimeException("AviatorScript instance not found in environment");
+        }
+
+        com.googlecode.aviator.AviatorEvaluatorInstance aviator = 
+            (com.googlecode.aviator.AviatorEvaluatorInstance) aviatorObj;
+
+        // Compile the condition expression once
+        com.googlecode.aviator.Expression compiledCondition;
+        try {
+            compiledCondition = aviator.compile(conditionExpr, true);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to compile filter condition: " + conditionExpr, e);
+        }
+
+        // Get time range from context (if set by FROM/TO functions)
+        TimeRange timeRange = getTimeRange(env);
+
+        // Filter collection based on condition
+        java.util.List<Object> filteredItems = new java.util.ArrayList<>();
+
+        for (Object item : collection) {
+            // Apply time range filter if item is an Event
+            if (timeRange != null && item instanceof Event) {
+                Event event = (Event) item;
+                Instant eventTime = parseTimestamp(event.getTimestamp());
+                if (eventTime != null && !timeRange.contains(eventTime)) {
+                    continue; // Skip events outside time range
+                }
+            }
+
+            // Create item-specific context
+            Map<String, Object> itemEnv = new java.util.HashMap<>(env);
+
+            // If item is an Event, set it as currentEvent
+            if (item instanceof Event) {
+                itemEnv.put("currentEvent", item);
+            }
+
+            // Evaluate condition for this item
+            try {
+                Object result = compiledCondition.execute(itemEnv);
+
+                // Check if condition is true
+                if (result instanceof Boolean && (Boolean) result) {
+                    filteredItems.add(item);
+                }
+            } catch (Exception e) {
+                // If condition evaluation fails for this item, skip it
+            }
+        }
+
+        return filteredItems;
+    }
+
+    /**
+     * Convert an object to a collection.
+     * Handles Collection, arrays, and null values.
+     *
+     * @param obj The object to convert
+     * @return Collection representation
+     */
+    protected Collection<?> toCollection(Object obj) {
+        if (obj == null) {
+            return java.util.Collections.emptyList();
+        }
+
+        if (obj instanceof Collection) {
+            return (Collection<?>) obj;
+        }
+
+        if (obj.getClass().isArray()) {
+            java.util.List<Object> list = new java.util.ArrayList<>();
+            int length = java.lang.reflect.Array.getLength(obj);
+            for (int i = 0; i < length; i++) {
+                list.add(java.lang.reflect.Array.get(obj, i));
+            }
+            return list;
+        }
+
+        throw new TypeMismatchException(
+            "Expected collection or array, got " + obj.getClass().getSimpleName()
+        );
+    }
+
+    /**
+     * Parse timestamp string to Instant.
+     * Supports ISO-8601 format and epoch milliseconds.
+     *
+     * @param timestamp The timestamp string
+     * @return The Instant, or null if parsing fails
+     */
+    private Instant parseTimestamp(String timestamp) {
+        if (timestamp == null || timestamp.isEmpty()) {
+            return null;
+        }
+
+        try {
+            return Instant.parse(timestamp);
+        } catch (Exception e) {
+            // Try parsing as epoch milliseconds
+            try {
+                long epochMilli = Long.parseLong(timestamp);
+                return Instant.ofEpochMilli(epochMilli);
+            } catch (Exception e2) {
+                return null;
+            }
+        }
+    }
 }

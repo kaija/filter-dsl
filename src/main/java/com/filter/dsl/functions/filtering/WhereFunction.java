@@ -19,23 +19,26 @@ import java.util.Map;
 /**
  * WHERE function - Filter a collection based on a boolean condition.
  *
- * Usage: WHERE(collection, "condition_expression")
+ * Usage: 
+ * - WHERE("condition_expression") -> filters userData.events (implicit)
+ * - WHERE(collection, "condition_expression") -> filters explicit collection (backward compatible)
  *
- * Filters the provided collection to only include items where the condition
- * evaluates to true. The condition is evaluated for each item with that item
- * set as the current context.
+ * Filters the provided collection (or userData.events by default) to only include items 
+ * where the condition evaluates to true. The condition is evaluated for each item with 
+ * that item set as the current context.
  *
  * NOTE: Due to AviatorScript's eager evaluation, the condition must be passed as a STRING
  * expression that will be compiled and evaluated lazily for each item.
  *
- * This is a more general version of IF that works on any collection, not just
- * the events from userData. It can be used to filter results from other functions.
+ * When called with a single argument, WHERE automatically uses userData.events as the 
+ * collection to filter. This simplifies common use cases where you're filtering events.
  *
  * Integrates with time range context (FROM/TO) when filtering event collections.
  *
  * Examples:
- * - WHERE(events, "EQ(EVENT(\"event_name\"), \"purchase\")") -> filter events by name
- * - WHERE(IF("..."), "EQ(EVENT(\"event_type\"), \"action\")") -> chain filters
+ * - WHERE("EQ(EVENT(\"eventName\"), \"purchase\")") -> filter events by name (simplified)
+ * - WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")") -> explicit (backward compatible)
+ * - WHERE(someCollection, "EQ(EVENT(\"eventType\"), \"action\")") -> filter custom collection
  *
  * Returns: A filtered collection
  */

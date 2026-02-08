@@ -240,12 +240,12 @@ class DSLParserTest {
     
     @Test
     void testParseEmptyArgumentList() {
+        // COUNT() is now valid - it counts all events from userData.events
         String expression = "COUNT()";
         ParseResult result = parser.parse(expression);
         
-        assertFalse(result.isValid());
-        assertTrue(result.getErrorMessage().contains("COUNT"));
-        assertTrue(result.getErrorMessage().toLowerCase().contains("argument"));
+        assertTrue(result.isValid(), "COUNT() should be valid with new simplified syntax");
+        assertNull(result.getErrorMessage());
     }
     
     @Test

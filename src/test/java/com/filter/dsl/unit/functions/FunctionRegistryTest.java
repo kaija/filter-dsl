@@ -382,8 +382,8 @@ class FunctionRegistryTest {
         FunctionMetadata metadata = registry.getMetadata("COUNT");
         assertNotNull(metadata);
         assertEquals("COUNT", metadata.getName());
-        assertEquals(1, metadata.getMinArgs());
-        assertEquals(1, metadata.getMaxArgs());
+        assertEquals(0, metadata.getMinArgs());
+        assertEquals(2, metadata.getMaxArgs());
     }
 
     @Test
@@ -401,15 +401,15 @@ class FunctionRegistryTest {
         FunctionMetadata sumMetadata = registry.getMetadata("SUM");
         assertNotNull(sumMetadata);
         assertEquals("SUM", sumMetadata.getName());
-        assertEquals(1, sumMetadata.getMinArgs());
-        assertEquals(1, sumMetadata.getMaxArgs());
+        assertEquals(0, sumMetadata.getMinArgs());
+        assertEquals(2, sumMetadata.getMaxArgs());
         
         // Verify AVG metadata
         FunctionMetadata avgMetadata = registry.getMetadata("AVG");
         assertNotNull(avgMetadata);
         assertEquals("AVG", avgMetadata.getName());
-        assertEquals(1, avgMetadata.getMinArgs());
-        assertEquals(1, avgMetadata.getMaxArgs());
+        assertEquals(0, avgMetadata.getMinArgs());
+        assertEquals(2, avgMetadata.getMaxArgs());
     }
 
     @Test

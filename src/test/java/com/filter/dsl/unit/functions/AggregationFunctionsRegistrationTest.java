@@ -41,9 +41,9 @@ class AggregationFunctionsRegistrationTest {
         
         assertNotNull(registry.getMetadata("COUNT"));
         assertEquals("COUNT", registry.getMetadata("COUNT").getName());
-        assertEquals(1, registry.getMetadata("COUNT").getMinArgs());
-        assertEquals(1, registry.getMetadata("COUNT").getMaxArgs());
-        assertEquals("Returns the number of items in a collection", registry.getMetadata("COUNT").getDescription());
+        assertEquals(0, registry.getMetadata("COUNT").getMinArgs());
+        assertEquals(2, registry.getMetadata("COUNT").getMaxArgs());
+        assertTrue(registry.getMetadata("COUNT").getDescription().contains("userData.events"));
     }
 
     @Test
@@ -87,9 +87,9 @@ class AggregationFunctionsRegistrationTest {
         
         assertNotNull(registry.getMetadata("SUM"));
         assertEquals("SUM", registry.getMetadata("SUM").getName());
-        assertEquals(1, registry.getMetadata("SUM").getMinArgs());
-        assertEquals(1, registry.getMetadata("SUM").getMaxArgs());
-        assertEquals("Returns the sum of all numeric values in a collection", registry.getMetadata("SUM").getDescription());
+        assertEquals(0, registry.getMetadata("SUM").getMinArgs());
+        assertEquals(2, registry.getMetadata("SUM").getMaxArgs());
+        assertTrue(registry.getMetadata("SUM").getDescription().contains("userData.events"));
     }
 
     @Test
@@ -109,9 +109,9 @@ class AggregationFunctionsRegistrationTest {
         
         assertNotNull(registry.getMetadata("AVG"));
         assertEquals("AVG", registry.getMetadata("AVG").getName());
-        assertEquals(1, registry.getMetadata("AVG").getMinArgs());
-        assertEquals(1, registry.getMetadata("AVG").getMaxArgs());
-        assertEquals("Returns the arithmetic mean of all numeric values in a collection", registry.getMetadata("AVG").getDescription());
+        assertEquals(0, registry.getMetadata("AVG").getMinArgs());
+        assertEquals(2, registry.getMetadata("AVG").getMaxArgs());
+        assertTrue(registry.getMetadata("AVG").getDescription().contains("userData.events"));
     }
 
     @Test
@@ -194,9 +194,9 @@ class AggregationFunctionsRegistrationTest {
         
         assertNotNull(registry.getMetadata("MIN"));
         assertEquals("MIN", registry.getMetadata("MIN").getName());
-        assertEquals(1, registry.getMetadata("MIN").getMinArgs());
-        assertEquals(1, registry.getMetadata("MIN").getMaxArgs());
-        assertEquals("Returns the minimum value from a collection of comparable values", registry.getMetadata("MIN").getDescription());
+        assertEquals(0, registry.getMetadata("MIN").getMinArgs());
+        assertEquals(2, registry.getMetadata("MIN").getMaxArgs());
+        assertTrue(registry.getMetadata("MIN").getDescription().contains("userData.events"));
     }
 
     @Test
@@ -216,9 +216,9 @@ class AggregationFunctionsRegistrationTest {
         
         assertNotNull(registry.getMetadata("MAX"));
         assertEquals("MAX", registry.getMetadata("MAX").getName());
-        assertEquals(1, registry.getMetadata("MAX").getMinArgs());
-        assertEquals(1, registry.getMetadata("MAX").getMaxArgs());
-        assertEquals("Returns the maximum value from a collection of comparable values", registry.getMetadata("MAX").getDescription());
+        assertEquals(0, registry.getMetadata("MAX").getMinArgs());
+        assertEquals(2, registry.getMetadata("MAX").getMaxArgs());
+        assertTrue(registry.getMetadata("MAX").getDescription().contains("userData.events"));
     }
 
     @Test
@@ -262,10 +262,9 @@ class AggregationFunctionsRegistrationTest {
         
         assertNotNull(registry.getMetadata("UNIQUE"));
         assertEquals("UNIQUE", registry.getMetadata("UNIQUE").getName());
-        assertEquals(1, registry.getMetadata("UNIQUE").getMinArgs());
-        assertEquals(1, registry.getMetadata("UNIQUE").getMaxArgs());
-        assertEquals("Returns only distinct values from a collection, preserving order of first occurrence", 
-                     registry.getMetadata("UNIQUE").getDescription());
+        assertEquals(0, registry.getMetadata("UNIQUE").getMinArgs());
+        assertEquals(2, registry.getMetadata("UNIQUE").getMaxArgs());
+        assertTrue(registry.getMetadata("UNIQUE").getDescription().contains("userData.events"));
     }
 
     @Test

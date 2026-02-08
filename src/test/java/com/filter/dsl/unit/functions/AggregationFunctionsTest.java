@@ -140,24 +140,31 @@ class AggregationFunctionsTest {
     void testCountWithWrongArgumentCount() {
         CountFunction count = new CountFunction();
         List<Integer> list = Arrays.asList(1, 2, 3);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(TypeMismatchException.class, () -> {
             count.call(env, createAviatorObject(list), createAviatorObject(list));
         });
     }
 
     @Test
     void testCountWithNoArguments() {
+        // New behavior: COUNT() should work and return count of userData.events
         CountFunction count = new CountFunction();
-        assertThrows(FunctionArgumentException.class, () -> {
-            count.call(env, new AviatorObject[0]);
-        });
+        
+        // Create test environment with userData
+        Map<String, Object> testEnv = createTestEnvWithEvents(5);
+        
+        AviatorObject result = count.call(testEnv, new AviatorObject[0]);
+        assertNotNull(result);
+        assertEquals(5L, result.getValue(testEnv));
     }
 
     @Test
-    void testCountWithNonCollectionArgument() {
+    void testCountWithNonCollectionNonStringArgument() {
+        // String arguments are now valid (filter conditions)
+        // Only non-collection, non-string arguments should throw
         CountFunction count = new CountFunction();
         assertThrows(TypeMismatchException.class, () -> {
-            count.call(env, new AviatorString("not a collection"));
+            count.call(env, AviatorLong.valueOf(123));
         });
     }
 
@@ -173,9 +180,9 @@ class AggregationFunctionsTest {
     void testCountMetadata() {
         CountFunction count = new CountFunction();
         assertEquals("COUNT", count.getName());
-        assertEquals(1, count.getFunctionMetadata().getMinArgs());
-        assertEquals(1, count.getFunctionMetadata().getMaxArgs());
-        assertEquals("Returns the number of items in a collection", count.getFunctionMetadata().getDescription());
+        assertEquals(0, count.getFunctionMetadata().getMinArgs());
+        assertEquals(2, count.getFunctionMetadata().getMaxArgs());
+        assertTrue(count.getFunctionMetadata().getDescription().contains("userData.events"));
     }
 
     @Test
@@ -419,17 +426,23 @@ class AggregationFunctionsTest {
     void testSumWithWrongArgumentCount() {
         SumFunction sum = new SumFunction();
         List<Integer> list = Arrays.asList(1, 2, 3);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(TypeMismatchException.class, () -> {
             sum.call(env, createAviatorObject(list), createAviatorObject(list));
         });
     }
 
     @Test
     void testSumWithNoArguments() {
+        // New behavior: SUM() should work and return sum of userData.events
         SumFunction sum = new SumFunction();
-        assertThrows(FunctionArgumentException.class, () -> {
-            sum.call(env, new AviatorObject[0]);
-        });
+        
+        // Create test environment with userData
+        Map<String, Object> testEnv = createTestEnvWithEvents(5);
+        
+        AviatorObject result = sum.call(testEnv, new AviatorObject[0]);
+        assertNotNull(result);
+        // Sum of empty event parameters should be 0
+        assertEquals(0L, result.getValue(testEnv));
     }
 
     @Test
@@ -442,10 +455,12 @@ class AggregationFunctionsTest {
     }
 
     @Test
-    void testSumWithNonCollectionArgument() {
+    void testSumWithNonCollectionNonStringArgument() {
+        // String arguments are now valid (filter conditions)
+        // Only non-collection, non-string arguments should throw
         SumFunction sum = new SumFunction();
         assertThrows(TypeMismatchException.class, () -> {
-            sum.call(env, new AviatorString("not a collection"));
+            sum.call(env, AviatorLong.valueOf(123));
         });
     }
 
@@ -453,9 +468,9 @@ class AggregationFunctionsTest {
     void testSumMetadata() {
         SumFunction sum = new SumFunction();
         assertEquals("SUM", sum.getName());
-        assertEquals(1, sum.getFunctionMetadata().getMinArgs());
-        assertEquals(1, sum.getFunctionMetadata().getMaxArgs());
-        assertEquals("Returns the sum of all numeric values in a collection", sum.getFunctionMetadata().getDescription());
+        assertEquals(0, sum.getFunctionMetadata().getMinArgs());
+        assertEquals(2, sum.getFunctionMetadata().getMaxArgs());
+        assertTrue(sum.getFunctionMetadata().getDescription().contains("userData.events"));
     }
 
     @Test
@@ -639,17 +654,23 @@ class AggregationFunctionsTest {
     void testAvgWithWrongArgumentCount() {
         AvgFunction avg = new AvgFunction();
         List<Integer> list = Arrays.asList(1, 2, 3);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(TypeMismatchException.class, () -> {
             avg.call(env, createAviatorObject(list), createAviatorObject(list));
         });
     }
 
     @Test
     void testAvgWithNoArguments() {
+        // New behavior: AVG() should work and return average of userData.events
         AvgFunction avg = new AvgFunction();
-        assertThrows(FunctionArgumentException.class, () -> {
-            avg.call(env, new AviatorObject[0]);
-        });
+        
+        // Create test environment with userData
+        Map<String, Object> testEnv = createTestEnvWithEvents(5);
+        
+        AviatorObject result = avg.call(testEnv, new AviatorObject[0]);
+        assertNotNull(result);
+        // Average of empty event parameters should be null
+        assertNull(result.getValue(testEnv));
     }
 
     @Test
@@ -662,10 +683,12 @@ class AggregationFunctionsTest {
     }
 
     @Test
-    void testAvgWithNonCollectionArgument() {
+    void testAvgWithNonCollectionNonStringArgument() {
+        // String arguments are now valid (filter conditions)
+        // Only non-collection, non-string arguments should throw
         AvgFunction avg = new AvgFunction();
         assertThrows(TypeMismatchException.class, () -> {
-            avg.call(env, new AviatorString("not a collection"));
+            avg.call(env, AviatorLong.valueOf(123));
         });
     }
 
@@ -673,9 +696,9 @@ class AggregationFunctionsTest {
     void testAvgMetadata() {
         AvgFunction avg = new AvgFunction();
         assertEquals("AVG", avg.getName());
-        assertEquals(1, avg.getFunctionMetadata().getMinArgs());
-        assertEquals(1, avg.getFunctionMetadata().getMaxArgs());
-        assertEquals("Returns the arithmetic mean of all numeric values in a collection", avg.getFunctionMetadata().getDescription());
+        assertEquals(0, avg.getFunctionMetadata().getMinArgs());
+        assertEquals(2, avg.getFunctionMetadata().getMaxArgs());
+        assertTrue(avg.getFunctionMetadata().getDescription().contains("userData.events"));
     }
 
     @Test
@@ -905,17 +928,23 @@ class AggregationFunctionsTest {
     void testMinWithWrongArgumentCount() {
         MinFunction min = new MinFunction();
         List<Integer> list = Arrays.asList(1, 2, 3);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(TypeMismatchException.class, () -> {
             min.call(env, createAviatorObject(list), createAviatorObject(list));
         });
     }
 
     @Test
     void testMinWithNoArguments() {
+        // New behavior: MIN() should work and return min from userData.events
         MinFunction min = new MinFunction();
-        assertThrows(FunctionArgumentException.class, () -> {
-            min.call(env, new AviatorObject[0]);
-        });
+        
+        // Create test environment with userData
+        Map<String, Object> testEnv = createTestEnvWithEvents(5);
+        
+        AviatorObject result = min.call(testEnv, new AviatorObject[0]);
+        assertNotNull(result);
+        // Empty event parameters return null
+        assertNull(result.getValue(testEnv));
     }
 
     @Test
@@ -937,10 +966,12 @@ class AggregationFunctionsTest {
     }
 
     @Test
-    void testMinWithNonCollectionArgument() {
+    void testMinWithNonCollectionNonStringArgument() {
+        // String arguments are now valid (filter conditions)
+        // Only non-collection, non-string arguments should throw
         MinFunction min = new MinFunction();
         assertThrows(TypeMismatchException.class, () -> {
-            min.call(env, new AviatorString("not a collection"));
+            min.call(env, AviatorLong.valueOf(123));
         });
     }
 
@@ -948,9 +979,9 @@ class AggregationFunctionsTest {
     void testMinMetadata() {
         MinFunction min = new MinFunction();
         assertEquals("MIN", min.getName());
-        assertEquals(1, min.getFunctionMetadata().getMinArgs());
-        assertEquals(1, min.getFunctionMetadata().getMaxArgs());
-        assertEquals("Returns the minimum value from a collection of comparable values", min.getFunctionMetadata().getDescription());
+        assertEquals(0, min.getFunctionMetadata().getMinArgs());
+        assertEquals(2, min.getFunctionMetadata().getMaxArgs());
+        assertTrue(min.getFunctionMetadata().getDescription().contains("userData.events"));
     }
 
     @Test
@@ -1150,17 +1181,23 @@ class AggregationFunctionsTest {
     void testMaxWithWrongArgumentCount() {
         MaxFunction max = new MaxFunction();
         List<Integer> list = Arrays.asList(1, 2, 3);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(TypeMismatchException.class, () -> {
             max.call(env, createAviatorObject(list), createAviatorObject(list));
         });
     }
 
     @Test
     void testMaxWithNoArguments() {
+        // New behavior: MAX() should work and return max from userData.events
         MaxFunction max = new MaxFunction();
-        assertThrows(FunctionArgumentException.class, () -> {
-            max.call(env, new AviatorObject[0]);
-        });
+        
+        // Create test environment with userData
+        Map<String, Object> testEnv = createTestEnvWithEvents(5);
+        
+        AviatorObject result = max.call(testEnv, new AviatorObject[0]);
+        assertNotNull(result);
+        // Empty event parameters return null
+        assertNull(result.getValue(testEnv));
     }
 
     @Test
@@ -1182,10 +1219,12 @@ class AggregationFunctionsTest {
     }
 
     @Test
-    void testMaxWithNonCollectionArgument() {
+    void testMaxWithNonCollectionNonStringArgument() {
+        // String arguments are now valid (filter conditions)
+        // Only non-collection, non-string arguments should throw
         MaxFunction max = new MaxFunction();
         assertThrows(TypeMismatchException.class, () -> {
-            max.call(env, new AviatorString("not a collection"));
+            max.call(env, AviatorLong.valueOf(123));
         });
     }
 
@@ -1193,9 +1232,9 @@ class AggregationFunctionsTest {
     void testMaxMetadata() {
         MaxFunction max = new MaxFunction();
         assertEquals("MAX", max.getName());
-        assertEquals(1, max.getFunctionMetadata().getMinArgs());
-        assertEquals(1, max.getFunctionMetadata().getMaxArgs());
-        assertEquals("Returns the maximum value from a collection of comparable values", max.getFunctionMetadata().getDescription());
+        assertEquals(0, max.getFunctionMetadata().getMinArgs());
+        assertEquals(2, max.getFunctionMetadata().getMaxArgs());
+        assertTrue(max.getFunctionMetadata().getDescription().contains("userData.events"));
     }
 
     @Test
@@ -1577,24 +1616,33 @@ class AggregationFunctionsTest {
     void testUniqueWithWrongArgumentCount() {
         UniqueFunction unique = new UniqueFunction();
         List<Integer> list = Arrays.asList(1, 2, 3);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(TypeMismatchException.class, () -> {
             unique.call(env, createAviatorObject(list), createAviatorObject(list));
         });
     }
 
     @Test
     void testUniqueWithNoArguments() {
+        // New behavior: UNIQUE() should work and return unique events from userData.events
         UniqueFunction unique = new UniqueFunction();
-        assertThrows(FunctionArgumentException.class, () -> {
-            unique.call(env, new AviatorObject[0]);
-        });
+        
+        // Create test environment with userData
+        Map<String, Object> testEnv = createTestEnvWithEvents(5);
+        
+        AviatorObject result = unique.call(testEnv, new AviatorObject[0]);
+        assertNotNull(result);
+        @SuppressWarnings("unchecked")
+        List<?> resultList = (List<?>) result.getValue(testEnv);
+        assertEquals(5, resultList.size()); // 5 unique events
     }
 
     @Test
-    void testUniqueWithNonCollectionArgument() {
+    void testUniqueWithNonCollectionNonStringArgument() {
+        // String arguments are now valid (filter conditions)
+        // Only non-collection, non-string arguments should throw
         UniqueFunction unique = new UniqueFunction();
         assertThrows(TypeMismatchException.class, () -> {
-            unique.call(env, new AviatorString("not a collection"));
+            unique.call(env, AviatorLong.valueOf(123));
         });
     }
 
@@ -1602,10 +1650,9 @@ class AggregationFunctionsTest {
     void testUniqueMetadata() {
         UniqueFunction unique = new UniqueFunction();
         assertEquals("UNIQUE", unique.getName());
-        assertEquals(1, unique.getFunctionMetadata().getMinArgs());
-        assertEquals(1, unique.getFunctionMetadata().getMaxArgs());
-        assertEquals("Returns only distinct values from a collection, preserving order of first occurrence", 
-                     unique.getFunctionMetadata().getDescription());
+        assertEquals(0, unique.getFunctionMetadata().getMinArgs());
+        assertEquals(2, unique.getFunctionMetadata().getMaxArgs());
+        assertTrue(unique.getFunctionMetadata().getDescription().contains("userData.events"));
     }
 
     @Test
@@ -1713,5 +1760,32 @@ class AggregationFunctionsTest {
         assertEquals(2, resultList.size());
         assertEquals("value", resultList.get(0));
         assertEquals("second", resultList.get(1));
+    }
+
+    // ========== Helper Methods for New Syntax Tests ==========
+
+    /**
+     * Create a test environment with userData containing specified number of events
+     */
+    private Map<String, Object> createTestEnvWithEvents(int eventCount) {
+        Map<String, Object> testEnv = new HashMap<>();
+        
+        // Create real Event objects
+        List<com.filter.dsl.models.Event> events = new ArrayList<>();
+        for (int i = 0; i < eventCount; i++) {
+            com.filter.dsl.models.Event event = com.filter.dsl.models.Event.builder()
+                .eventName("test_event_" + i)
+                .eventType("action")
+                .build();
+            events.add(event);
+        }
+        
+        // Create real UserData object
+        com.filter.dsl.models.UserData userData = com.filter.dsl.models.UserData.builder()
+            .events(events)
+            .build();
+        
+        testEnv.put("userData", userData);
+        return testEnv;
     }
 }

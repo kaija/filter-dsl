@@ -41,44 +41,80 @@ public class MinFunction extends DSLFunction {
     public FunctionMetadata getFunctionMetadata() {
         return FunctionMetadata.builder()
             .name("MIN")
-            .minArgs(1)
-            .maxArgs(1)
-            .argumentType(0, ArgumentType.COLLECTION)
+            .minArgs(0)
+            .maxArgs(2)
+            .argumentType(0, ArgumentType.ANY)
+            .argumentType(1, ArgumentType.STRING)
             .returnType(ReturnType.ANY)
-            .description("Returns the minimum value from a collection of comparable values")
+            .description("Returns the minimum value. Defaults to userData.events with optional filter condition.")
             .build();
     }
 
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
-        validateArgCount(args, 1);
-        
-        Object value = getValue(args[0], env);
-        
-        // Handle null - return null as per Requirements 3.7
-        if (value == null) {
-            return AviatorNil.NIL;
-        }
-        
-        // Handle collection
-        if (value instanceof Collection) {
-            Collection<?> collection = (Collection<?>) value;
-            
-            // Empty collection returns null as per Requirements 3.7
-            if (collection.isEmpty()) {
+        // No arguments: MIN() -> min from all events
+        if (args.length == 0) {
+            Collection<?> events = getUserDataEvents(env);
+            if (events.isEmpty()) {
                 return AviatorNil.NIL;
             }
-            
-            return minCollection(collection);
+            return minCollection(events);
         }
-        
-        // Handle array
-        if (value.getClass().isArray()) {
-            return minArray(value);
+
+        Object firstArg = getValue(args[0], env);
+
+        // Single string argument: MIN("condition") -> filter and find min
+        if (args.length == 1 && firstArg instanceof String) {
+            Collection<?> events = getUserDataEvents(env);
+            Collection<?> filtered = filterCollection(events, (String) firstArg, env);
+            if (filtered.isEmpty()) {
+                return AviatorNil.NIL;
+            }
+            return minCollection(filtered);
         }
-        
-        throw new com.filter.dsl.functions.TypeMismatchException(
-            "MIN expects a collection or array of comparable values, got " + value.getClass().getSimpleName()
+
+        // Single collection argument: MIN(collection) -> legacy syntax
+        if (args.length == 1) {
+            if (firstArg == null) {
+                return AviatorNil.NIL;
+            }
+
+            if (firstArg instanceof Collection) {
+                Collection<?> collection = (Collection<?>) firstArg;
+                if (collection.isEmpty()) {
+                    return AviatorNil.NIL;
+                }
+                return minCollection(collection);
+            }
+
+            if (firstArg.getClass().isArray()) {
+                return minArray(firstArg);
+            }
+
+            throw new com.filter.dsl.functions.TypeMismatchException(
+                "MIN expects a collection, array, or filter condition, got " + firstArg.getClass().getSimpleName()
+            );
+        }
+
+        // Two arguments: MIN(collection, "condition") -> legacy syntax with filter
+        if (args.length == 2) {
+            Object conditionObj = getValue(args[1], env);
+            if (!(conditionObj instanceof String)) {
+                throw new com.filter.dsl.functions.TypeMismatchException(
+                    "MIN condition must be a string expression"
+                );
+            }
+
+            Collection<?> collection = toCollection(firstArg);
+            Collection<?> filtered = filterCollection(collection, (String) conditionObj, env);
+            if (filtered.isEmpty()) {
+                return AviatorNil.NIL;
+            }
+            return minCollection(filtered);
+        }
+
+        throw new com.filter.dsl.functions.FunctionArgumentException(
+            "MIN expects 0-2 arguments, got " + args.length
         );
     }
     
@@ -341,9 +377,19 @@ public class MinFunction extends DSLFunction {
         }
     }
     
-    // Override the single-argument call method for AviatorScript compatibility
+    // Override for AviatorScript compatibility
+    @Override
+    public AviatorObject call(Map<String, Object> env) {
+        return call(env, new AviatorObject[]{});
+    }
+
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         return call(env, new AviatorObject[]{arg1});
+    }
+
+    @Override
+    public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
+        return call(env, new AviatorObject[]{arg1, arg2});
     }
 }

@@ -39,44 +39,71 @@ public class UniqueFunction extends DSLFunction {
     public FunctionMetadata getFunctionMetadata() {
         return FunctionMetadata.builder()
             .name("UNIQUE")
-            .minArgs(1)
-            .maxArgs(1)
-            .argumentType(0, ArgumentType.COLLECTION)
+            .minArgs(0)
+            .maxArgs(2)
+            .argumentType(0, ArgumentType.ANY)
+            .argumentType(1, ArgumentType.STRING)
             .returnType(ReturnType.COLLECTION)
-            .description("Returns only distinct values from a collection, preserving order of first occurrence")
+            .description("Returns distinct values. Defaults to userData.events with optional filter condition.")
             .build();
     }
 
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
-        validateArgCount(args, 1);
-
-        Object value = getValue(args[0], env);
-
-        // Handle null - return empty list
-        if (value == null) {
-            return new AviatorRuntimeJavaType(new ArrayList<>());
+        // No arguments: UNIQUE() -> unique events from userData.events
+        if (args.length == 0) {
+            Collection<?> events = getUserDataEvents(env);
+            return uniqueCollection(events);
         }
 
-        // Handle collection
-        if (value instanceof Collection) {
-            Collection<?> collection = (Collection<?>) value;
+        Object firstArg = getValue(args[0], env);
 
-            // Empty collection returns empty list
-            if (collection.isEmpty()) {
+        // Single string argument: UNIQUE("condition") -> filter and get unique
+        if (args.length == 1 && firstArg instanceof String) {
+            Collection<?> events = getUserDataEvents(env);
+            Collection<?> filtered = filterCollection(events, (String) firstArg, env);
+            return uniqueCollection(filtered);
+        }
+
+        // Single collection argument: UNIQUE(collection) -> legacy syntax
+        if (args.length == 1) {
+            if (firstArg == null) {
                 return new AviatorRuntimeJavaType(new ArrayList<>());
             }
 
-            return uniqueCollection(collection);
+            if (firstArg instanceof Collection) {
+                Collection<?> collection = (Collection<?>) firstArg;
+                if (collection.isEmpty()) {
+                    return new AviatorRuntimeJavaType(new ArrayList<>());
+                }
+                return uniqueCollection(collection);
+            }
+
+            if (firstArg.getClass().isArray()) {
+                return uniqueArray(firstArg);
+            }
+
+            throw new com.filter.dsl.functions.TypeMismatchException(
+                "UNIQUE expects a collection, array, or filter condition, got " + firstArg.getClass().getSimpleName()
+            );
         }
 
-        // Handle array
-        if (value.getClass().isArray()) {
-            return uniqueArray(value);
+        // Two arguments: UNIQUE(collection, "condition") -> legacy syntax with filter
+        if (args.length == 2) {
+            Object conditionObj = getValue(args[1], env);
+            if (!(conditionObj instanceof String)) {
+                throw new com.filter.dsl.functions.TypeMismatchException(
+                    "UNIQUE condition must be a string expression"
+                );
+            }
+
+            Collection<?> collection = toCollection(firstArg);
+            Collection<?> filtered = filterCollection(collection, (String) conditionObj, env);
+            return uniqueCollection(filtered);
         }
 
-        throw new com.filter.dsl.functions.TypeMismatchException(
-            "UNIQUE expects a collection or array, got " + value.getClass().getSimpleName()
+        throw new com.filter.dsl.functions.FunctionArgumentException(
+            "UNIQUE expects 0-2 arguments, got " + args.length
         );
     }
 
@@ -125,9 +152,19 @@ public class UniqueFunction extends DSLFunction {
         return new AviatorRuntimeJavaType(uniqueList);
     }
 
-    // Override the single-argument call method for AviatorScript compatibility
+    // Override for AviatorScript compatibility
+    @Override
+    public AviatorObject call(Map<String, Object> env) {
+        return call(env, new AviatorObject[]{});
+    }
+
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         return call(env, new AviatorObject[]{arg1});
+    }
+
+    @Override
+    public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
+        return call(env, new AviatorObject[]{arg1, arg2});
     }
 }

@@ -14,13 +14,16 @@ import java.util.Map;
 /**
  * SUM function - Returns the sum of all numeric values in a collection.
  * 
- * Usage: SUM(collection)
+ * Usage:
+ * - SUM() -> Sum all events from userData.events
+ * - SUM("condition") -> Sum events matching the condition
+ * - SUM(collection) -> Sum items in the provided collection (legacy)
+ * - SUM(collection, "condition") -> Sum items in collection matching condition (legacy)
  * 
  * Examples:
- * - SUM([1, 2, 3, 4, 5]) -> 15
- * - SUM([1.5, 2.5, 3.0]) -> 7.0
- * - SUM([]) -> 0
- * - SUM(null) -> 0
+ * - SUM() -> Sum all event parameters
+ * - SUM("EQ(EVENT(\"eventName\"), \"purchase\")") -> Sum purchase amounts
+ * - SUM([1, 2, 3, 4, 5]) -> 15 (legacy)
  * 
  * The function handles both integer and floating-point numbers.
  * Returns 0 for empty collections as specified in Requirements 3.7.
@@ -36,44 +39,71 @@ public class SumFunction extends DSLFunction {
     public FunctionMetadata getFunctionMetadata() {
         return FunctionMetadata.builder()
             .name("SUM")
-            .minArgs(1)
-            .maxArgs(1)
-            .argumentType(0, ArgumentType.COLLECTION)
+            .minArgs(0)
+            .maxArgs(2)
+            .argumentType(0, ArgumentType.ANY)
+            .argumentType(1, ArgumentType.STRING)
             .returnType(ReturnType.NUMBER)
-            .description("Returns the sum of all numeric values in a collection")
+            .description("Returns the sum of numeric values. Defaults to userData.events with optional filter condition.")
             .build();
     }
 
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject... args) {
-        validateArgCount(args, 1);
-        
-        Object value = getValue(args[0], env);
-        
-        // Handle null - return 0 as per Requirements 3.7
-        if (value == null) {
-            return AviatorLong.valueOf(0);
+        // No arguments: SUM() -> sum all events
+        if (args.length == 0) {
+            Collection<?> events = getUserDataEvents(env);
+            return sumCollection(events);
         }
-        
-        // Handle collection
-        if (value instanceof Collection) {
-            Collection<?> collection = (Collection<?>) value;
-            
-            // Empty collection returns 0 as per Requirements 3.7
-            if (collection.isEmpty()) {
+
+        Object firstArg = getValue(args[0], env);
+
+        // Single string argument: SUM("condition") -> filter and sum events
+        if (args.length == 1 && firstArg instanceof String) {
+            Collection<?> events = getUserDataEvents(env);
+            Collection<?> filtered = filterCollection(events, (String) firstArg, env);
+            return sumCollection(filtered);
+        }
+
+        // Single collection argument: SUM(collection) -> legacy syntax
+        if (args.length == 1) {
+            if (firstArg == null) {
                 return AviatorLong.valueOf(0);
             }
-            
-            return sumCollection(collection);
+
+            if (firstArg instanceof Collection) {
+                Collection<?> collection = (Collection<?>) firstArg;
+                if (collection.isEmpty()) {
+                    return AviatorLong.valueOf(0);
+                }
+                return sumCollection(collection);
+            }
+
+            if (firstArg.getClass().isArray()) {
+                return sumArray(firstArg);
+            }
+
+            throw new com.filter.dsl.functions.TypeMismatchException(
+                "SUM expects a collection, array, or filter condition, got " + firstArg.getClass().getSimpleName()
+            );
         }
-        
-        // Handle array
-        if (value.getClass().isArray()) {
-            return sumArray(value);
+
+        // Two arguments: SUM(collection, "condition") -> legacy syntax with filter
+        if (args.length == 2) {
+            Object conditionObj = getValue(args[1], env);
+            if (!(conditionObj instanceof String)) {
+                throw new com.filter.dsl.functions.TypeMismatchException(
+                    "SUM condition must be a string expression"
+                );
+            }
+
+            Collection<?> collection = toCollection(firstArg);
+            Collection<?> filtered = filterCollection(collection, (String) conditionObj, env);
+            return sumCollection(filtered);
         }
-        
-        throw new com.filter.dsl.functions.TypeMismatchException(
-            "SUM expects a collection or array of numbers, got " + value.getClass().getSimpleName()
+
+        throw new com.filter.dsl.functions.FunctionArgumentException(
+            "SUM expects 0-2 arguments, got " + args.length
         );
     }
     
@@ -184,9 +214,19 @@ public class SumFunction extends DSLFunction {
         }
     }
     
-    // Override the single-argument call method for AviatorScript compatibility
+    // Override for AviatorScript compatibility
+    @Override
+    public AviatorObject call(Map<String, Object> env) {
+        return call(env, new AviatorObject[]{});
+    }
+
     @Override
     public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
         return call(env, new AviatorObject[]{arg1});
+    }
+
+    @Override
+    public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
+        return call(env, new AviatorObject[]{arg1, arg2});
     }
 }
