@@ -2,37 +2,34 @@
 
 A domain-specific language (DSL) built on AviatorScript for user segmentation and filtering. This library enables marketers and analysts to create complex queries on user profile data, visits, and events to perform segmentation, filtering, and computed property creation.
 
-## ✨ What's New in v1.1.0
+## Key Features
 
-**Simplified Aggregation Syntax** - Aggregation functions now support implicit event filtering!
+**Simplified Aggregation Syntax** - Aggregation functions support implicit event filtering for cleaner expressions:
 
 ```java
-// Old syntax (still supported)
-"COUNT(WHERE(userData.events, \"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\"))"
+// Count all events
+"COUNT()"
 
-// New simplified syntax (recommended)
+// Count with filter condition
 "COUNT(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\")"
 
-// Even simpler - count all events
-"COUNT()"
+// Sum with filter
+"SUM(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\")"
 ```
 
 **Benefits:**
-- 25-70% shorter expressions
-- More intuitive and readable
+- Shorter, more readable expressions
 - Fewer nested parentheses
-- Fully backward compatible
-
-See [Migration Guide](#migration-to-simplified-syntax) below for details.
+- Intuitive syntax
 
 ## Features
 
 - **UPPERCASE Function Syntax**: Clear, readable DSL with consistent naming
-- **Simplified Aggregation Syntax**: Implicit event filtering for cleaner expressions (NEW!)
+- **Simplified Aggregation Syntax**: Implicit event filtering for cleaner expressions
 - **String-Based Filtering**: IF and WHERE functions accept string expressions for proper lazy evaluation
 - **Extensible Architecture**: Easy to add custom functions without modifying core code
 - **Type-Safe**: Built-in type checking and validation
-- **Comprehensive Function Library**: 65+ built-in functions for logical operations, aggregations, math, dates, strings, and more
+- **Comprehensive Function Library**: 66+ built-in functions including TOP for frequency analysis
 - **Property-Based Testing**: Thoroughly tested with both unit and property-based tests
 - **Thread-Safe**: Safe for concurrent use in multi-threaded applications
 
@@ -88,7 +85,7 @@ UserData userData = UserData.builder()
         .build())
     .build();
 
-// Evaluate a DSL expression (NEW simplified syntax!)
+// Evaluate a DSL expression
 String expression = "GT(COUNT(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\"), 5)";
 EvaluationResult result = DSL.evaluate(expression, userData);
 
@@ -115,23 +112,20 @@ if (result.isSuccess()) {
 
 ### Aggregation Functions
 
-**NEW: Simplified syntax with implicit event filtering!**
-
 - `COUNT()` - Count all events from userData.events
 - `COUNT("condition")` - Count events matching condition
-- `COUNT(collection)` - Count items in collection (legacy)
+- `COUNT(collection)` - Count items in collection
 - `SUM()` - Sum all event parameters
 - `SUM("condition")` - Sum events matching condition
 - `AVG()` - Average of all event parameters
 - `AVG("condition")` - Average of events matching condition
-- `MIN()` - Minimum from all events
-- `MIN("condition")` - Minimum from events matching condition
-- `MAX()` - Maximum from all events
-- `MAX("condition")` - Maximum from events matching condition
-- `UNIQUE()` - Distinct events
-- `UNIQUE("condition")` - Distinct events matching condition
-
-**Note:** All aggregation functions now default to operating on `userData.events` when no collection is provided. This eliminates the need for explicit `WHERE(userData.events, ...)` wrappers in most cases.
+- `MIN(collection)` - Minimum value from collection
+- `MAX(collection)` - Maximum value from collection
+- `UNIQUE(collection)` - Distinct values from collection
+- `TOP(collection)` - Most frequent value
+- `TOP(collection, n)` - Top n most frequent values
+- `TOP(collection, propertyName)` - Most frequent property value
+- `TOP(collection, propertyName, n)` - Top n most frequent property values
 
 ### Mathematical Functions
 - Basic: `ADD`, `SUBTRACT`, `MULTIPLY`, `DIVIDE`, `MOD`
@@ -169,31 +163,14 @@ if (result.isSuccess()) {
 
 ## Example Use Cases
 
-### Users with more than 5 purchases in the past year
+### Users with more than 5 purchases
 
-**New simplified syntax (recommended):**
 ```java
 String expression = "GT(COUNT(\"EQ(EVENT(\\\"eventName\\\"), \\\"purchase\\\")\"), 5)";
 ```
 
-**Old syntax (still supported):**
-```java
-String expression = """
-    GT(
-        COUNT(
-            WHERE(
-                userData.events,
-                "EQ(EVENT(\\"eventName\\"), \\"purchase\\")"
-            )
-        ),
-        5
-    )
-""";
-```
-
 ### Calculate active days ratio in recent 30 days
 
-**New simplified syntax (recommended):**
 ```java
 String expression = """
     DIVIDE(
@@ -210,29 +187,8 @@ String expression = """
 """;
 ```
 
-**Old syntax (still supported):**
-```java
-String expression = """
-    DIVIDE(
-        COUNT(
-            UNIQUE(
-                WHERE(
-                    userData.events,
-                    "AND(
-                        EQ(EVENT(\\"eventType\\"), \\"action\\"),
-                        IN_RECENT_DAYS(30)
-                    )"
-                )
-            )
-        ),
-        30
-    )
-""";
-```
-
 ### Segment users by purchase amount
 
-**New simplified syntax (recommended):**
 ```java
 String expression = """
     BUCKET(
@@ -242,70 +198,18 @@ String expression = """
 """;
 ```
 
-**Old syntax (still supported):**
-```java
-String expression = """
-    BUCKET(
-        SUM(
-            WHERE(
-                userData.events,
-                "EQ(EVENT(\\"eventName\\"), \\"purchase\\")"
-            )
-        ),
-        [[0, 10, "Low"], [10, 100, "Medium"], [100, 500, "High"], [500, 5000, "VIP"]]
-    )
-""";
-```
-
-## Migration to Simplified Syntax
-
-The new simplified syntax is **fully backward compatible**. Your existing code will continue to work without any changes.
-
-### Key Changes
-
-1. **Aggregation functions now accept 0-2 arguments** (previously 1 argument)
-   - 0 arguments: operates on all `userData.events`
-   - 1 string argument: filters `userData.events` with condition
-   - 1 collection argument: operates on provided collection (legacy)
-   - 2 arguments: filters provided collection with condition (legacy)
-
-2. **No need for explicit `WHERE(userData.events, ...)` wrapper**
-   - Old: `COUNT(WHERE(userData.events, "condition"))`
-   - New: `COUNT("condition")`
-
-3. **Expression length reduced by 25-70%**
-   - Fewer nested parentheses
-   - Less quote escaping
-   - More readable
-
-### Migration Examples
+### Compute most common device attributes
 
 ```java
-// Count all events
-Old: COUNT(userData.events)
-New: COUNT()
+// Most frequently used OS
+profile.defineComputedProperty("os", "TOP(userData.visits, 'os')");
 
-// Count with filter
-Old: COUNT(WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")"))
-New: COUNT("EQ(EVENT(\"eventName\"), \"purchase\")")
+// Most frequently used browser
+profile.defineComputedProperty("browser", "TOP(userData.visits, 'browser')");
 
-// Sum with filter
-Old: SUM(WHERE(userData.events, "EQ(EVENT(\"eventName\"), \"purchase\")"))
-New: SUM("EQ(EVENT(\"eventName\"), \"purchase\")")
-
-// Complex nested expression
-Old: DIVIDE(COUNT(UNIQUE(WHERE(userData.events, "AND(...)"))), 30)
-New: DIVIDE(COUNT(UNIQUE("AND(...)")), 30)
+// Top 3 most visited pages
+profile.defineComputedProperty("top_pages", "TOP(userData.visits, 'landingPage', 3)");
 ```
-
-### When to Use Old Syntax
-
-The old syntax is still useful when:
-- Filtering a custom collection (not `userData.events`)
-- Working with existing code that you don't want to update
-- Team preference for explicit collection specification
-
-Both syntaxes are equally performant and fully supported.
 
 ## Extending the DSL
 
@@ -460,11 +364,7 @@ This project follows [Semantic Versioning](https://semver.org/):
 - **MINOR** version for backwards-compatible functionality additions
 - **PATCH** version for backwards-compatible bug fixes
 
-Current version: **1.1.0**
-
-### Version History
-- **1.1.0** (2024-02) - Added simplified aggregation syntax with implicit event filtering
-- **1.0.0** (2024-01) - Initial release
+Current version: **1.0.0**
 
 ## License
 
@@ -483,7 +383,8 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 For detailed documentation, see:
 - [API Documentation](docs/API.md) - Complete API reference, data models, error handling, thread safety, and performance
-- [Function Reference](docs/FUNCTION_REFERENCE.md) - All 50+ built-in DSL functions with examples
+- [Function Reference](docs/FUNCTION_REFERENCE.md) - All 66+ built-in DSL functions with examples
+- [Profile Guide](docs/PROFILE_GUIDE.md) - User profile model with computed properties
 - [Extension Guide](docs/EXTENSION_GUIDE.md) - How to add custom functions
 - [Performance Guide](docs/PERFORMANCE_GUIDE.md) - Optimization techniques and best practices
 - [Use Case Examples](docs/USE_CASE_EXAMPLES.md) - Common segmentation patterns
